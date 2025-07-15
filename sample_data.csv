@@ -1,0 +1,31 @@
+IndexNumber,FullName,Course,Score
+ST001,John Doe,Computer Science,85
+ST002,Jane Smith,Mathematics,92
+ST003,Bob Johnson,Physics,78
+ST004,Alice Brown,Chemistry,67
+ST005,Charlie Wilson,Biology,89
+ST006,Diana Davis,Computer Science,95
+ST007,Eve Miller,Mathematics,72
+ST008,Frank Garcia,Physics,81
+ST009,Grace Lee,Chemistry,58
+ST010,Henry Wang,Biology,74
+ST011,Ivy Chen,Computer Science,88
+ST012,Jack Taylor,Mathematics,76
+ST013,Kelly Anderson,Physics,83
+ST014,Leo Martinez,Chemistry,91
+ST015,Maya Patel,Biology,79
+ST016,Noah Kim,Computer Science,87
+ST017,Olivia Thompson,Mathematics,94
+ST018,Paul Rodriguez,Physics,65
+ST019,Quinn O'Connor,Chemistry,82
+ST020,Ruby Williams,Biology,77
+ST021,Sam Thompson,Computer Science,90
+ST022,Tara Johnson,Mathematics,68
+ST023,Uma Sharma,Physics,75
+ST024,Victor Lopez,Chemistry,86
+ST025,Wendy Clark,Biology,73
+ST026,Xavier Brown,Computer Science,92
+ST027,Yara Ahmed,Mathematics,84
+ST028,Zoe Wilson,Physics,79
+ST029,Adam Davis,Chemistry,71
+ST030,Betty White,Biology,88
