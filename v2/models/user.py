@@ -2,6 +2,10 @@ from sqlalchemy import Column, Integer, String, Enum , ForeignKey
 from database.db import Base
 from sqlalchemy.orm import relationship
 import enum 
+class Gender(enum.Enum):
+    male = "Male"
+    female = "Female"
+    other = "Other"
 class UserRole(enum.Enum):
 	student="student"
 	staff="staff"
@@ -18,7 +22,7 @@ class User(Base):
 	hashed_password=Column(String, nullable=False)
 	email=Column(String, unique=True, index=True)
 	role=Column(Enum(UserRole), nullable=False)
-
+	gender = Column(Enum(Gender), nullable=False)
 #Relationships
 
 
@@ -28,16 +32,17 @@ class User(Base):
     # Each user (teacher or student) belongs to one school
 	school_id = Column(Integer, ForeignKey("schools.id"), nullable=True)
 	school = relationship("School", back_populates="teachers", foreign_keys=[school_id])
-	
+	enrollments = relationship("Enrollment", back_populates="student")
 	#classes relationships 
-	classes_as_teacher = relationship("Class", back_populates="class_teacher", foreign_keys='Class.class_teacher_id')
 	class_id = Column(Integer, ForeignKey("classes.id"), nullable=True)
 	class_enrolled = relationship("Class", back_populates="students", foreign_keys=[class_id])
 	
 	#courses relationship
 	courses_as_teacher = relationship("Course", back_populates="teacher", foreign_keys='Course.teacher_id')
 	
-	
+	#Grade
+	grades_received = relationship("Grade", foreign_keys="[Grade.student_id]", back_populates="student")
+	grades_given = relationship("Grade", foreign_keys="[Grade.graded_by]", back_populates="grader")
 	
 	
 	

@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from database.db import Base
 
+
 class Course(Base):
 	__tablename__ = "courses"
 
@@ -17,6 +18,6 @@ class Course(Base):
 
 	class_ = relationship("Class", back_populates="courses")
 	teacher = relationship("User", back_populates="courses_as_teacher")
-
+	grades = relationship("Grade", back_populates="course")
 	def __repr__(self):
 		return f"<Course(title={self.title}, code={self.code})>"
