@@ -1,0 +1,6 @@
+psycopg2
+python-dotenv
+watchdog
+uvicorn
+sqlalchemy
+openpyxl
