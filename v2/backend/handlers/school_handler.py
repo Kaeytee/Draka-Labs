@@ -12,7 +12,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-@require_role(['admin'])
+@require_role(['superuser'])
 def handle_register_school(request):
     """
     Handle POST requests to register a new school and its admin.
@@ -59,7 +59,7 @@ def handle_register_school(request):
         request._set_headers(500)
         request.wfile.write(json.dumps({"error": f"Internal server error: {str(e)}"}).encode('utf-8'))
 
-@require_role(['admin'])
+@require_role(['superuser', 'admin'])
 def handle_list_schools(request):
     """
     Handle GET requests to list all schools.
@@ -125,6 +125,10 @@ def handle_list_schools(request):
                 request._set_headers(400)
                 request.wfile.write(json.dumps({"error": "school_id must be an integer"}).encode('utf-8'))
                 return
+
+        # If admin, restrict to their own school
+        if user.role.value == 'admin' and hasattr(user, 'school_id'):
+            school_id = user.school_id
 
         # Fetch schools
         schools = list_schools(school_id)

@@ -10,9 +10,10 @@ class Gender(enum.Enum):
     other = "Other"
 
 class UserRole(enum.Enum):
-    student = "student"
-    staff = "staff"
-    admin = "admin"
+    superuser = "superuser"  # Application owner
+    admin = "admin"          # School admin
+    staff = "staff"          # Teacher
+    student = "student"      # Student
 
 class UserStatus(enum.Enum):
     active = "active"

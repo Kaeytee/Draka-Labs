@@ -90,7 +90,7 @@ def generate_password(initials, user_id):
 	Example: UG+!+12345
 	
 	"""
-	return f"{initials.upper()}+!+{user_id}"
+	return f"{initials.upper()}!{user_id}"
 
 # def generate_email_and_password(role, initials, user_id):
 # 	"""
@@ -106,13 +106,52 @@ def generate_password(initials, user_id):
 # 		email = f"{role}.{initials}@st.schoolsys.edu.gh.com"
 
 
-def register_school_admin(school_name, full_name, phone, email, gender, grading_system, date_of_birth=None):
+
+# Superuser registration (application owner)
+def register_superuser(full_name, phone, email, gender, password, date_of_birth=None):
 	"""
-	Register a new school and its admin 
-	Only Schools register directly; all other users are auto generated
+	Register the application owner (superuser). Only one allowed.
 	"""
 	db = SessionLocal()
 	try:
+		# Check if a superuser already exists
+		from models.user import Gender
+		from models.user import UserRole
+		if db.query(User).filter_by(role=UserRole.superuser).first():
+			return {"status": "error", "message": "Superuser already exists."}
+		base_username = generate_username(full_name)
+		username, user_email = generate_unique_username_email(db, base_username, "SU", "superuser")
+		hashed_password = hashlib.sha256(password.encode()).hexdigest()
+		superuser = User(
+			username=username,
+			full_name=full_name,
+			hashed_password=hashed_password,
+			email=user_email,
+			role=UserRole.superuser,
+			gender=Gender[gender.lower()] if isinstance(gender, str) else gender,
+			date_of_birth=date_of_birth or datetime.date(1980, 1, 1)
+		)
+		db.add(superuser)
+		db.commit()
+		db.refresh(superuser)
+		log_audit(superuser.id, "register_superuser", f"Superuser {username} registered as application owner")
+		return {"status": "success", "username": username, "email": user_email}
+	except Exception as e:
+		db.rollback()
+		return {"status": "error", "message": str(e)}
+	finally:
+		db.close()
+
+# School admin registration (for schools registering on the platform)
+def register_school_admin(school_name, full_name, phone, email, gender, grading_system, date_of_birth=None, acting_user=None):
+	"""
+	Register a new school and its admin. Only superuser can register a new school.
+	"""
+	db = SessionLocal()
+	try:
+		# Restrict to superuser only
+		if acting_user is not None and getattr(acting_user, "role", None) != UserRole.superuser:
+			return {"status": "error", "message": "Only the application owner (superuser) can register new schools."}
 		initials = generate_initials(school_name)
 		# Generate a unique school ID
 		school_id = generate_school_id(school_name)
@@ -136,7 +175,7 @@ def register_school_admin(school_name, full_name, phone, email, gender, grading_
 			}
 
 		# Create the admin user
-		from models.user import Gender
+		from models.user import Gender, UserRole
 		admin_user = User(
 			username=admin_username,
 			full_name=full_name,
@@ -146,10 +185,6 @@ def register_school_admin(school_name, full_name, phone, email, gender, grading_
 			gender=Gender[gender.lower()] if isinstance(gender, str) else gender,
 			date_of_birth=date_of_birth or datetime.date(1980, 1, 1)
 		)
-		db.add(admin_user)
-		db.commit()
-		db.refresh(admin_user)
-
 		# Audit log for admin registration
 		log_audit(admin_user.id, "register_school_admin", f"Admin {admin_username} registered school {school_name}")
 
@@ -241,7 +276,7 @@ def create_teacher_account(db, full_name, school_initials, gender="male", date_o
 			if class_obj:
 				class_id = class_obj.id
 
-		from models.user import Gender
+		from models.user import Gender, UserRole
 		if not gender:
 			gender = 'male'
 		try:
