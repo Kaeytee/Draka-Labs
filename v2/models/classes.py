@@ -2,41 +2,49 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from database.db import Base
 from models.user import User
+from models.school import School
+from models.course import Course
+from models.enrollment import Enrollment
 
 class Class(Base):
-    __tablename__ = "classes"  # Use plural to avoid reserved keyword issues
+    """
+    SQLAlchemy model for the classes table.
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(64), nullable=False, index=True)
+    Represents a class in a school, with optional relationships to enrolled students,
+    school, courses, and enrollments.
+
+    Attributes:
+        id (int): Primary key for the class.
+        name (str): Name of the class (e.g., "Math 101").
+        school_id (int): ID of the school the class belongs to.
+        description (str): Optional description of the class (max 256 characters).
+        academic_year (str): Academic year (e.g., "2024-2025").
+        school (relationship): Relationship to the School model.
+        students (relationship): Students enrolled via User.class_id.
+        courses (relationship): Courses associated with the class.
+        enrollments (relationship): Enrollments linking students to the class.
+
+    Notes:
+        - Uses User.class_id for direct student enrollment (one-to-many).
+        - Uses Enrollment table for additional enrollment management (many-to-many).
+        - Ensure indexes on school_id and class_id for performance.
+        - Profile images are included in student data via get_classes.
+    """
+    __tablename__ = "classes"
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    school_id = Column(Integer, ForeignKey("schools.id"), nullable=False)
     description = Column(String(256), nullable=True)
     academic_year = Column(String(16), nullable=False)
-    school_id = Column(Integer, ForeignKey("schools.id"), nullable=False)
 
-    # --- Relationships ---
-
-    # Link to the owning school
     school = relationship("School", back_populates="classes")
-
-    # All students enrolled in this class
-    # foreign_keys must be a list of columns, not a string
     students = relationship(
         "User",
         back_populates="class_enrolled",
         foreign_keys=[User.class_id]
     )
-
-    # All courses attached to this class
     courses = relationship("Course", back_populates="class_")
-
-    # All enrollment records for this class
     enrollments = relationship("Enrollment", back_populates="class_")
 
     def __repr__(self):
         return f"<Class(name={self.name}, year={self.academic_year})>"
-
-# --- IMPORTANT ---
-# In related models, ensure the following:
-# - In School: classes = relationship("Class", back_populates="school")
-# - In User: class_enrolled = relationship("Class", back_populates="students", foreign_keys=[User.class_id])
-# - In Course: class_ = relationship("Class", back_populates="courses")
-# - In Enrollment: class_ = relationship("Class", back_populates="enrollments")

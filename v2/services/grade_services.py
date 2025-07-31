@@ -4,6 +4,27 @@ from models.grade import Grade
 from models.user import User, UserRole
 from models.course import Course
 
+def get_grades(student_id, course_id):
+    db = SessionLocal()
+    try:
+        grade = db.query(Grade).filter_by(student_id=student_id, course_id=course_id).first()
+        if not grade:
+            return None
+        return {
+            "grade_id": grade.id,
+            "student_id": grade.student_id,
+            "course_id": grade.course_id,
+            "value": grade.value,
+            "created_at": grade.created_at.isoformat() if grade.created_at else None,
+            "updated_at": grade.updated_at.isoformat() if grade.updated_at else None,
+            "graded_by": grade.graded_by
+        }
+    except Exception as e:
+        log_audit(None, "get_grade_error", str(e))
+        return None
+    finally:
+        db.close()
+
 def upload_grade(student_id, course_id, value, graded_by):
     """
     Teacher uploads a grade for a student in a course.

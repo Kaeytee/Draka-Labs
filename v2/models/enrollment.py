@@ -5,14 +5,13 @@ from datetime import datetime
 
 
 class Enrollment(Base):
-	__tabelname__ = "enrollment"
+    __tablename__ = "enrollments"
 
-	id= Column(Integer, primary_key=True, index=True)
-	student_id= Column(Integer, ForeignKey("user.id"), nullable=False)
-	class_id=Column(Integer, ForeignKey("class.id"), nullable=False)
-	enrolled_at=Column(DateTime, default=datetime.utcnow)
+    id = Column(Integer, primary_key=True, index=True)
+    student_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    class_id = Column(Integer, ForeignKey("classes.id"), nullable=False)
+    enrolled_at = Column(DateTime, default=datetime.utcnow)
 
-
-	##Relationship
-	student= relationship("User", back_populates="enrollments")
-	class_ = relationship("Class", back_populates="enrollments")
+    # Relationships
+    student = relationship("User", back_populates="enrollments")
+    class_ = relationship("Class", back_populates="enrollments")

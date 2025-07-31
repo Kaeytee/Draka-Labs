@@ -1,29 +1,15 @@
-# Placeholder for not-yet-implemented handlers
-def not_implemented(request):
-    request._set_headers(501)
-    request.wfile.write(json.dumps({"error": "Not implemented"}).encode('utf-8'))
-
-# Temporary stub for handle_list_schools
-def handle_list_schools(request):
-    not_implemented(request)
-
-# Temporary stub for handle_list_teachers
-def handle_list_teachers(request):
-    not_implemented(request)
-
-# Temporary stub for handle_assign_teacher
-def handle_assign_teacher(request):
-    not_implemented(request)
+from handlers.teacher_handler import handle_list_teachers, handle_assign_teacher
+from handlers.school_handler import handle_list_schools
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import logging
 from database.db import engine, Base
 from handlers.grade_handlers import handle_upload_grade
-from handlers.class_handlers import handle_create_class
+from handlers.class_handler import handle_create_class
 from handlers.course_handlers import handle_create_course
 from handlers.enrollment_handlers import handle_enroll_student
 from handlers.school_handler import handle_update_grading_system, handle_register_school
-from handlers.class_handlers import handle_list_classes
+from handlers.class_handler import handle_list_classes
 from handlers.course_handlers import handle_list_courses
 from handlers.enrollment_handlers import handle_list_students
 from handlers.grade_handlers import handle_list_grades
