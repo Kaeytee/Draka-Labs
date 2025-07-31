@@ -34,12 +34,14 @@ def register_user(full_name, password=None, role="student", school_name=None, us
             password = generate_password(initials, user_id)
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
+        # Map 'teacher' to UserRole.staff for consistency
+        user_role = UserRole.staff if role == "teacher" else UserRole(role)
         user = User(
             username=username,
             full_name=full_name,
             hashed_password=hashed_password,
             email=email,
-            role=UserRole(role)
+            role=user_role
         )
         db.add(user)
         db.commit()

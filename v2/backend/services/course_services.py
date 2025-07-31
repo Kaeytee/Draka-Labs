@@ -1,10 +1,12 @@
 import logging
 import uuid
+import datetime
 from sqlalchemy.exc import DatabaseError
 from database.db import SessionLocal
 from models.course import Course
 from models.classes import Class
-from models.user import User
+from models.user import User, UserRole, Gender
+from services.accounts import create_teacher_account
 
 # Configure logging for course service operations
 logging.basicConfig(
@@ -13,10 +15,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Stub for audit logging (replace with actual implementation if available)
 def log_audit(user_id, action, message):
     """
-    Stub for logging audit events.
+    Log audit events for course service operations.
 
     Args:
         user_id (int or None): ID of the user performing the action.
@@ -24,39 +25,6 @@ def log_audit(user_id, action, message):
         message (str): Details of the action or error.
     """
     logger.info(f"Audit [user_id={user_id}]: {action} - {message}")
-
-# Stub for teacher account creation (replace with actual implementation if available)
-def create_teacher_account(db, full_name, school_initials, school_id):
-    """
-    Stub for creating a teacher account.
-
-    Args:
-        db: SQLAlchemy session.
-        full_name (str): Full name of the teacher.
-        school_initials (str): School identifier for email generation.
-        school_id (int): ID of the school.
-
-    Returns:
-        tuple: (teacher: User, password: str)
-    """
-    try:
-        email = f"{full_name.lower().replace(' ', '.')}.{school_initials}@school.com"
-        password = str(uuid.uuid4())[:8]  # Generate random password
-        teacher = User(
-            full_name=full_name,
-            email=email,
-            role="teacher",
-            school_id=school_id
-        )
-        db.add(teacher)
-        db.commit()
-        db.refresh(teacher)
-        logger.info(f"Created teacher account: {email}")
-        return teacher, password
-    except DatabaseError as e:
-        db.rollback()
-        logger.error(f"Failed to create teacher: {str(e)}")
-        raise
 
 def get_courses(class_id=None, school_id=None):
     """
@@ -85,7 +53,7 @@ def get_courses(class_id=None, school_id=None):
                 "class_id": 1,
                 "teacher_id": 10,
                 "students": [
-                    {"id": 1, "full_name": "John Doe", "profile_image": "uploads/123e4567-e89b-12d3-a456-426614174000.jpg"},
+                    {"id": 1, "full_name": "John Doe", "profile_image": "Uploads/123e4567-e89b-12d3-a456-426614174000.jpg"},
                     ...
                 ]
             },
@@ -153,7 +121,7 @@ def get_courses(class_id=None, school_id=None):
     finally:
         db.close()
 
-def create_course(title, code, credit_hours, grading_type, class_id, school_initials, teacher_id=None, teacher_full_name=None):
+def create_course(title, code, credit_hours, grading_type, class_id, school_initials, teacher_id=None, teacher_full_name=None, teacher_gender="male", teacher_dob=None):
     """
     Create a new course and assign a teacher (existing or auto-generated).
 
@@ -169,6 +137,8 @@ def create_course(title, code, credit_hours, grading_type, class_id, school_init
         school_initials (str): School identifier for teacher email generation.
         teacher_id (int, optional): ID of the teacher.
         teacher_full_name (str, optional): Full name for auto-generated teacher.
+        teacher_gender (str, optional): Gender for auto-generated teacher (default "male").
+        teacher_dob (date, optional): Date of birth for auto-generated teacher.
 
     Returns:
         tuple: (success: bool, message: str, data: dict or None)
@@ -219,6 +189,12 @@ def create_course(title, code, credit_hours, grading_type, class_id, school_init
     if teacher_full_name is not None and (not isinstance(teacher_full_name, str) or not teacher_full_name.strip()):
         logger.error(f"Invalid teacher_full_name: {teacher_full_name}")
         return False, "Teacher full name must be a non-empty string", None
+    if teacher_gender not in [g.value for g in Gender]:
+        logger.error(f"Invalid teacher_gender: {teacher_gender}")
+        return False, "Teacher gender must be a valid Gender enum value", None
+    if teacher_dob is not None and not isinstance(teacher_dob, datetime.date):
+        logger.error(f"Invalid teacher_dob: {teacher_dob}")
+        return False, "Teacher date of birth must be a valid date", None
 
     db = SessionLocal()
     try:
@@ -235,12 +211,12 @@ def create_course(title, code, credit_hours, grading_type, class_id, school_init
 
         # Assign existing teacher or auto-generate
         teacher = None
-        password = None
+        teacher_password = None
         if teacher_id:
             teacher = db.query(User).filter_by(
                 id=teacher_id,
                 school_id=class_obj.school_id,
-                role="teacher"
+                role=UserRole.staff
             ).first()
             if not teacher:
                 log_audit(None, "create_course_error", f"Teacher not found or not in this school: {teacher_id}")
@@ -249,9 +225,27 @@ def create_course(title, code, credit_hours, grading_type, class_id, school_init
             # Auto-generate teacher if no teacher_id provided
             if not teacher_full_name:
                 teacher_full_name = f"Teacher for {title}"
-            teacher, password = create_teacher_account(db, teacher_full_name, school_initials, class_obj.school_id)
+            if not teacher_dob:
+                teacher_dob = datetime.date(1980, 1, 1)  # Default DOB for auto-generated teacher
+            try:
+                teacher, teacher_password = create_teacher_account(
+                    db=db,
+                    full_name=teacher_full_name,
+                    school_initials=school_initials,
+                    gender=teacher_gender,
+                    date_of_birth=teacher_dob,
+                    school_id=class_obj.school_id
+                )
+                if teacher is None:
+                    db.rollback()
+                    log_audit(None, "create_course_error", f"Failed to auto-create teacher for course {title}")
+                    return False, f"Failed to create teacher {teacher_full_name}", None
+            except Exception as e:
+                db.rollback()
+                log_audit(None, "create_course_error", f"Exception during teacher creation: {str(e)}")
+                return False, f"Exception during teacher creation: {str(e)}", None
 
-        # Create course
+        # Create the course and assign teacher_id
         course = Course(
             title=title.strip(),
             code=code.strip(),
@@ -263,9 +257,8 @@ def create_course(title, code, credit_hours, grading_type, class_id, school_init
         db.add(course)
         db.commit()
         db.refresh(course)
-
-        log_audit(None, "create_course", f"Course {title} created for class {class_id} with teacher {teacher.id}")
-        return True, "Course created successfully", {
+        log_audit(teacher.id if teacher else None, "create_course", f"Course {title} created for class {class_id}")
+        data = {
             "course_id": course.id,
             "title": course.title,
             "code": course.code,
@@ -274,6 +267,7 @@ def create_course(title, code, credit_hours, grading_type, class_id, school_init
             "class_id": course.class_id,
             "teacher_id": course.teacher_id
         }
+        return True, "Course created successfully", data
 
     except DatabaseError as e:
         db.rollback()

@@ -1,3 +1,5 @@
+
+import datetime
 from services.audit_log_services import log_audit
 
 from database.db import SessionLocal
@@ -104,7 +106,7 @@ def generate_password(initials, user_id):
 # 		email = f"{role}.{initials}@st.schoolsys.edu.gh.com"
 
 
-def register_school_admin(school_name, full_name, phone, email, gender, grading_system):
+def register_school_admin(school_name, full_name, phone, email, gender, grading_system, date_of_birth=None):
 	"""
 	Register a new school and its admin 
 	Only Schools register directly; all other users are auto generated
@@ -141,7 +143,8 @@ def register_school_admin(school_name, full_name, phone, email, gender, grading_
 			hashed_password=hashed_password,
 			email=admin_email,
 			role=UserRole.admin,
-			gender=Gender[gender.lower()] if isinstance(gender, str) else gender
+			gender=Gender[gender.lower()] if isinstance(gender, str) else gender,
+			date_of_birth=date_of_birth or datetime.date(1980, 1, 1)
 		)
 		db.add(admin_user)
 		db.commit()
@@ -188,7 +191,7 @@ def register_school_admin(school_name, full_name, phone, email, gender, grading_
 	finally:
 		db.close()
 
-def create_student_account(db, full_name, school_initials, gender):
+def create_student_account(db, full_name, school_initials, gender, date_of_birth=None):
 	"""
 	Auto-generate a student account (Called by microservices not user )
 	"""
@@ -204,7 +207,8 @@ def create_student_account(db, full_name, school_initials, gender):
 		gender=gender,
 		hashed_password=hashed_password,
 		email=email,
-		role=UserRole.student
+		role=UserRole.student,
+		date_of_birth=date_of_birth or datetime.date(2010, 1, 1)
 	)
 	db.add(student)
 	db.commit()
@@ -213,24 +217,56 @@ def create_student_account(db, full_name, school_initials, gender):
 	log_audit(student.id, "create_student_account", f"Student {username} created for {full_name}")
 	return student, password
 
-def create_teacher_account(db, full_name, school_initials):
-	""""
-	Auto generate a teacher account (called by microservice , not user )
+def create_teacher_account(db, full_name, school_initials, gender="male", date_of_birth=None):
 	"""
-	base_username=generate_username(full_name)
-	username,email = generate_unique_username_email(db, base_username, school_initials, "teacher")
-	user_id= "".join(random.choices(string.digits, k=6))
-	password= generate_password(school_initials, user_id)
-	hashed_password= hashlib.sha256(password.encode()).hexdigest()
+	Auto generate a teacher account (called by microservice , not user )
+	Now accepts a gender parameter (default 'male').
+	"""
+	try:
+		base_username = generate_username(full_name)
+		username, email = generate_unique_username_email(db, base_username, school_initials, "teacher")
+		user_id = "".join(random.choices(string.digits, k=6))
+		password = generate_password(school_initials, user_id)
+		hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
-	# create teacher db 
+		# Find the school by initials
+		school = db.query(School).filter_by(initials=school_initials).first()
+		school_id = school.id if school else None
 
+		# Find a class for this teacher (optional: assign to first class of the school)
+		class_id = None
+		if school_id:
+			from models.classes import Class
+			class_obj = db.query(Class).filter_by(school_id=school_id).first()
+			if class_obj:
+				class_id = class_obj.id
 
+		from models.user import Gender
+		if not gender:
+			gender = 'male'
+		try:
+			gender_enum = Gender[gender.lower()] if isinstance(gender, str) else gender
+		except Exception as e:
+			print(f"[ERROR] Invalid gender '{gender}' for teacher {full_name}: {e}")
+			return None
 
-	teacher = User(
-		username=username,
-		full_name=full_name,
-		hashed_password=hashed_password,
-		email=email,
-		role=UserRole.staff
-	)
+		teacher = User(
+			username=username,
+			full_name=full_name,
+			hashed_password=hashed_password,
+			email=email,
+			role=UserRole.staff,
+			gender=gender_enum,
+			date_of_birth=date_of_birth or datetime.date(1980, 6, 15),
+			school_id=school_id,
+			class_id=class_id
+		)
+		db.add(teacher)
+		db.commit()
+		db.refresh(teacher)
+		log_audit(teacher.id, "create_teacher_account", f"Teacher {username} created for {full_name}")
+		return teacher, password
+	except Exception as e:
+		db.rollback()
+		print(f"[ERROR] Failed to create teacher {full_name}: {e}")
+		return None

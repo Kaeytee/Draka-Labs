@@ -16,14 +16,14 @@ class School(Base):
 	phone = Column(String(32), nullable=False)
 	email = Column(String(256), nullable=True)
 	address = Column(String(256), nullable=True)
-	admin_id = Column(Integer, ForeignKey("user.id"), nullable=False, unique=True)
+	admin_id = Column(Integer, ForeignKey("users.id"), nullable=False, unique=True)
 
 	# Relationships
 	admin = relationship("User", back_populates="admin_of_school", uselist=False, foreign_keys=[admin_id])
 	classes = relationship("Class", back_populates="school")
 	# Use string-based expressions for UserRole to avoid NameError during model initialization
-	teachers = relationship("User", back_populates="school", primaryjoin="and_(School.id==User.school_id, User.role=='teacher')")
-	students = relationship("User", back_populates="school", primaryjoin="and_(School.id==User.school_id, User.role=='student')")
+	teachers = relationship("User", back_populates="school", primaryjoin="and_(School.id==User.school_id, User.role=='staff')", overlaps="students")
+	students = relationship("User", back_populates="school", primaryjoin="and_(School.id==User.school_id, User.role=='student')", overlaps="teachers")
 
 	def __repr__(self):
 		return f"<School(name={self.name}, initials={self.initials})>"

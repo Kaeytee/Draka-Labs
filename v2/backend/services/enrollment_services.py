@@ -62,9 +62,10 @@ from models.user import User, UserRole
 from models.classes import Class
 from services.accounts import create_student_account
 
-def enroll_student(full_name, school_initials, class_id):
+def enroll_student(full_name, school_initials, class_id, gender=None, date_of_birth=None):
     """
     Enroll a student in a class, auto-generating their account if needed.
+    Accepts gender and passes it to create_student_account.
     """
     db = SessionLocal()
     try:
@@ -74,7 +75,7 @@ def enroll_student(full_name, school_initials, class_id):
             return False, "Class not found", None
 
         # Auto-generate student account
-        student, password = create_student_account(db, full_name, school_initials, class_obj.school_id)
+        student, password = create_student_account(db, full_name, school_initials, gender, date_of_birth=date_of_birth)
 
         # Create enrollment record
         enrollment = Enrollment(student_id=student.id, class_id=class_id)

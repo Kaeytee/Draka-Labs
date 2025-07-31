@@ -8,12 +8,12 @@ class Grade(Base):
     __tablename__ = "grades"
 
     id = Column(Integer, primary_key=True, index=True)
-    student_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    student_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
     value = Column(Float, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    graded_by = Column(Integer, ForeignKey("user.id"), nullable=False)  # Teacher who graded
+    graded_by = Column(Integer, ForeignKey("users.id"), nullable=False)  # Teacher who graded
     semester = Column(String(16), nullable=True)
     remarks = Column(String(256), nullable=True)
 

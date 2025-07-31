@@ -32,7 +32,7 @@ class Course(Base):
 	credit_hours = Column(Integer, nullable=False)
 	grading_type = Column(String, nullable=False)
 	class_id = Column(Integer, ForeignKey("classes.id"), nullable=False)
-	teacher_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+	teacher_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
 	# Relationships
 	class_ = relationship("Class", back_populates="courses")
