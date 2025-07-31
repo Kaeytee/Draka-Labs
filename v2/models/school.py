@@ -1,6 +1,8 @@
+
 from sqlalchemy import Column, Integer, Text, String, ForeignKey
 from sqlalchemy.orm import relationship
 from database.db import Base
+from models.user import UserRole
 
 
 
@@ -19,8 +21,9 @@ class School(Base):
 	# Relationships
 	admin = relationship("User", back_populates="admin_of_school", uselist=False, foreign_keys=[admin_id])
 	classes = relationship("Class", back_populates="school")
-	teachers = relationship("User", back_populates="school", primaryjoin="and_(School.id==User.school_id, User.role==UserRole.teacher)")
-	students = relationship("User", back_populates="school", primaryjoin="and_(School.id==User.school_id, User.role==UserRole.student)")
+	# Use string-based expressions for UserRole to avoid NameError during model initialization
+	teachers = relationship("User", back_populates="school", primaryjoin="and_(School.id==User.school_id, User.role=='teacher')")
+	students = relationship("User", back_populates="school", primaryjoin="and_(School.id==User.school_id, User.role=='student')")
 
 	def __repr__(self):
 		return f"<School(name={self.name}, initials={self.initials})>"

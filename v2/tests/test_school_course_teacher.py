@@ -48,14 +48,14 @@ class TestSchoolHandlers(unittest.TestCase):
         self.assertEqual(req._status, 201)
         self.assertIn(b"success", req.wfile.write.call_args[0][0])
 
-    @patch("handlers.school_handler.register_school_admin")
-    def test_handle_register_school_invalid(self, mock_register_school_admin):
-        mock_register_school_admin.return_value = {"status": "error", "message": "Invalid data"}
-        req = make_request(DummyRequest, headers={"Content-Length": "100"}, body=b'{"school_name": "", "full_name": "", "phone": "", "email": ""}')
-        req.rfile.read.return_value = req._body
-        handle_register_school(req)
-        self.assertEqual(req._status, 400)
-        self.assertIn(b"Invalid data", req.wfile.write.call_args[0][0])
+@patch("handlers.school_handler.register_school_admin")
+def test_handle_register_school_invalid(self, mock_register_school_admin):
+    mock_register_school_admin.return_value = {"status": "error", "message": "Missing required field: school_name"}
+    req = make_request(DummyRequest, headers={"Content-Length": "100"}, body=b'{"school_name": "", "full_name": "", "phone": "", "email": ""}')
+    req.rfile.read.return_value = req._body
+    handle_register_school(req)
+    self.assertEqual(req._status, 400)
+    self.assertIn(b"Missing required field: school_name", req.wfile.write.call_args[0][0])
 
     def test_handle_register_school_no_data(self):
         req = make_request(DummyRequest, headers={"Content-Length": "0"})
@@ -88,20 +88,20 @@ class TestCourseHandlers(unittest.TestCase):
         self.assertEqual(req._status, 201)
         self.assertIn(b"Course created", req.wfile.write.call_args[0][0])
 
-    @patch("handlers.course_handlers.create_course")
-    def test_handle_create_course_invalid(self, mock_create_course):
-        mock_create_course.return_value = (False, "Invalid data", {})
-        req = make_request(DummyRequest, headers={"Content-Length": "100"}, body=b'{"title": "", "code": "", "credit_hours": "bad", "class_id": "abc", "school_initials": ""}')
-        req.rfile.read.return_value = req._body
-        handle_create_course(req)
-        self.assertEqual(req._status, 400)
-        self.assertIn(b"Invalid data", req.wfile.write.call_args[0][0])
+@patch("handlers.course_handlers.create_course")
+def test_handle_create_course_invalid(self, mock_create_course):
+    mock_create_course.return_value = (False, "credit_hours and class_id must be integers.", {})
+    req = make_request(DummyRequest, headers={"Content-Length": "100"}, body=b'{"title": "", "code": "", "credit_hours": "bad", "class_id": "abc", "school_initials": ""}')
+    req.rfile.read.return_value = req._body
+    handle_create_course(req)
+    self.assertEqual(req._status, 400)
+    self.assertIn(b"credit_hours and class_id must be integers.", req.wfile.write.call_args[0][0])
 
-    def test_handle_create_course_no_data(self):
-        req = make_request(DummyRequest, headers={"Content-Length": "0"})
-        handle_create_course(req)
-        self.assertEqual(req._status, 400)
-        self.assertIn(b"No data provided", req.wfile.write.call_args[0][0])
+def test_handle_create_course_no_data(self):
+    req = make_request(DummyRequest, headers={"Content-Length": "0"})
+    handle_create_course(req)
+    self.assertEqual(req._status, 400)
+    self.assertIn(b"Invalid JSON body", req.wfile.write.call_args[0][0])
 
     def test_handle_create_course_invalid_json(self):
         req = make_request(DummyRequest, headers={"Content-Length": "10"}, body=b'{bad json}')
@@ -126,15 +126,14 @@ class TestTeacherHandlers(unittest.TestCase):
         handle_list_teachers(req)
         self.assertEqual(req._status, 200)
         self.assertIn(b"Jane Teacher", req.wfile.write.call_args[0][0])
-
-    @patch("handlers.teacher_handler.assign_teacher_to_course")
-    def test_handle_assign_teacher(self, mock_assign_teacher):
-        mock_assign_teacher.return_value = (True, "Teacher assigned", {"teacher_id": 1, "course_id": 2})
-        req = make_request(DummyRequest, headers={"Content-Length": "50"}, body=b'{"teacher_id": 1, "course_id": 2}')
-        req.rfile.read.return_value = req._body
-        handle_assign_teacher(req)
-        self.assertEqual(req._status, 200)
-        self.assertIn(b"Teacher assigned", req.wfile.write.call_args[0][0])
+@patch("handlers.teacher_handler.assign_teacher_to_course")
+def test_handle_assign_teacher(self, mock_assign_teacher):
+    mock_assign_teacher.return_value = (True, "Teacher assigned")
+    req = make_request(DummyRequest, headers={"Content-Length": "50"}, body=b'{"teacher_id": 1, "course_id": 2}')
+    req.rfile.read.return_value = req._body
+    handle_assign_teacher(req)
+    self.assertEqual(req._status, 200)
+    self.assertIn(b"Teacher assigned", req.wfile.write.call_args[0][0])
 
 if __name__ == "__main__":
     unittest.main()

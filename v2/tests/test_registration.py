@@ -5,11 +5,14 @@ from database.db import SessionLocal
 
 class TestRegistration(unittest.TestCase):
     def setUp(self):
+        import time
         self.db = SessionLocal()
-        self.school_name = "Test School"
+        unique_suffix = str(int(time.time() * 1000))[-6:]
+        self.school_name = f"Test School {unique_suffix}"
         self.full_name = "Test Admin"
         self.phone = "1234567890"
-        self.email = "test@school.com"
+        self.email = f"test_{unique_suffix}@school.com"
+        self.gender = "male"
         self.grading_system = None  # Should use default
 
     def tearDown(self):
@@ -17,13 +20,15 @@ class TestRegistration(unittest.TestCase):
         self.db.close()
 
     def test_register_school_admin(self):
-        success, message, result = register_school_admin(
-            self.school_name, self.full_name, self.phone, self.email, self.grading_system
+        result = register_school_admin(
+            self.school_name, self.full_name, self.phone, self.email, self.gender, self.grading_system
         )
-        self.assertTrue(success)
-        self.assertIn("school_id", result)
+        if result["status"] != "success":
+            print("register_school_admin error:", result)
+        self.assertEqual(result["status"], "success")
         self.assertIn("admin_username", result)
         self.assertIn("admin_email", result)
+        self.assertIn("password", result)
 
 if __name__ == "__main__":
     unittest.main()

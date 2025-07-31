@@ -63,7 +63,6 @@ def generate_unique_username_email(db, base_username, initials, role):
 		username = f"{base_username}_{suffix}"
 		suffix += 1
 	#Email Pattern 
-	
 	if role =="student":
 		email= f"{username}@st.{initials.lower()}.schoolsystem.com"
 	else:
@@ -102,10 +101,10 @@ def generate_password(initials, user_id):
 # 	elif role=="teacher":
 # 		email = f"{role}.{initials}@schoolsys.edu.gh.com"
 # 	elif role=="student":
-# 		email = f"{role}.{initials}@schoolsys.edu.gh.com"
+# 		email = f"{role}.{initials}@st.schoolsys.edu.gh.com"
 
 
-def register_school_admin(school_name, full_name, phone,email,grading_system):
+def register_school_admin(school_name, full_name, phone, email, gender, grading_system):
 	"""
 	Register a new school and its admin 
 	Only Schools register directly; all other users are auto generated
@@ -127,13 +126,22 @@ def register_school_admin(school_name, full_name, phone,email,grading_system):
 		# Store as JSON string
 		grading_system_json = json.dumps(grading_system)
 
+		# Check for duplicate school name
+		if db.query(School).filter_by(name=school_name).first():
+			return {
+				"status": "error",
+				"message": f"School name '{school_name}' already exists."
+			}
+
 		# Create the admin user
+		from models.user import Gender
 		admin_user = User(
 			username=admin_username,
 			full_name=full_name,
 			hashed_password=hashed_password,
 			email=admin_email,
-			role=UserRole.admin
+			role=UserRole.admin,
+			gender=Gender[gender.lower()] if isinstance(gender, str) else gender
 		)
 		db.add(admin_user)
 		db.commit()
@@ -167,6 +175,12 @@ def register_school_admin(school_name, full_name, phone,email,grading_system):
 		}
 	except Exception as e:
 		db.rollback()
+		# Handle duplicate key error for school name
+		if "duplicate key value violates unique constraint" in str(e) and "schools_name_key" in str(e):
+			return {
+				"status": "error",
+				"message": f"School name '{school_name}' already exists."
+			}
 		return {
 			"status": "error",
 			"message": str(e)

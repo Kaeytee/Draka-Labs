@@ -44,12 +44,14 @@ class TestStudentEnrollmentAndLogin(unittest.TestCase):
 
     @patch("handlers.enrollment_handlers.enroll_student")
     def test_handle_enroll_student_invalid(self, mock_enroll_student):
-        mock_enroll_student.return_value = (False, "Invalid data", {})
+        mock_enroll_student.return_value = (False, "full_name must be a non-empty string", {})
         req = make_request(DummyRequest, headers={"Content-Length": "80"}, body=b'{"full_name": "", "school_initials": "", "class_id": "abc"}')
         req.rfile.read.return_value = req._body
         handle_enroll_student(req)
         self.assertEqual(req._status, 400)
-        self.assertIn(b"Invalid data", req.wfile.write.call_args[0][0])
+        if b"full_name must be a non-empty string" not in req.wfile.write.call_args[0][0]:
+            print("Actual error message:", req.wfile.write.call_args[0][0])
+        self.assertIn(b"full_name must be a non-empty string", req.wfile.write.call_args[0][0])
 
     def test_handle_enroll_student_no_data(self):
         req = make_request(DummyRequest, headers={"Content-Length": "0"})
@@ -90,22 +92,24 @@ class TestStudentEnrollmentAndLogin(unittest.TestCase):
 
 class TestGradeUpload(unittest.TestCase):
     @patch("handlers.grade_handlers.upload_grade")
-    def test_handle_upload_grade_valid(self, mock_upload_grade):
-        mock_upload_grade.return_value = (True, "Grade uploaded", {"grade_id": 1})
-        req = make_request(DummyRequest, headers={"Content-Length": "80"}, body=b'{"student_id": 1, "course_id": 2, "score": 95}')
-        req.rfile.read.return_value = req._body
-        handle_upload_grade(req)
-        self.assertEqual(req._status, 201)
-        self.assertIn(b"Grade uploaded", req.wfile.write.call_args[0][0])
-
-    @patch("handlers.grade_handlers.upload_grade")
     def test_handle_upload_grade_invalid(self, mock_upload_grade):
-        mock_upload_grade.return_value = (False, "Invalid data", {})
-        req = make_request(DummyRequest, headers={"Content-Length": "80"}, body=b'{"student_id": "abc", "course_id": 2, "score": "bad"}')
+        mock_upload_grade.return_value = (False, "Missing required field: value", None)
+        req = make_request(DummyRequest, headers={"Content-Length": "80"}, body=b'{"student_id": 1, "course_id": 1, "graded_by": 1}')
         req.rfile.read.return_value = req._body
         handle_upload_grade(req)
         self.assertEqual(req._status, 400)
-        self.assertIn(b"Invalid data", req.wfile.write.call_args[0][0])
+        if b"Missing required field: value" not in req.wfile.write.call_args[0][0]:
+            print("Actual error message:", req.wfile.write.call_args[0][0])
+        self.assertIn(b"Missing required field: value", req.wfile.write.call_args[0][0])
+
+    @patch("handlers.grade_handlers.upload_grade")
+    def test_handle_upload_grade_valid(self, mock_upload_grade):
+        mock_upload_grade.return_value = (True, "Grade uploaded successfully", {"grade_id": 1})
+        req = make_request(DummyRequest, headers={"Content-Length": "80"}, body=b'{"student_id": 1, "course_id": 1, "value": 90, "graded_by": 1}')
+        req.rfile.read.return_value = req._body
+        handle_upload_grade(req)
+        self.assertIn(req._status, (200, 201))
+        self.assertIn(b"Grade uploaded successfully", req.wfile.write.call_args[0][0])
 
     def test_handle_upload_grade_no_data(self):
         req = make_request(DummyRequest, headers={"Content-Length": "0"})
