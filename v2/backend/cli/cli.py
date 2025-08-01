@@ -7,7 +7,7 @@ from models.user import User, UserRole, Gender
 from models.school import School
 from services.accounts import register_school_admin, create_teacher_account, register_superuser
 from services.class_services import create_class
-from services.course_services import create_course, get_courses
+from services.course_services import create_course, get_courses, get_courses_for_teacher
 from services.enrollment_services import enroll_student, get_students
 from models.classes import Class
 
@@ -16,8 +16,7 @@ def validate_gender(prompt="Gender"):
     valid_genders = {g.value.lower(): g.value for g in Gender}  # Map lowercase to enum value
     short_forms = {'m': 'male', 'f': 'female', 'o': 'other'}  # Allow short forms
     while True:
-        gender = input(f"{prompt} ({', '.join(valid_genders.values())}): ").strip().lower()
-        # Check exact match or short form
+        gender = input(f"{prompt} ({', '.join(valid_genders.values())} or m, f, o): ").strip().lower()
         if gender in valid_genders:
             return valid_genders[gender]
         if gender in short_forms:
@@ -221,8 +220,9 @@ def main():
                         if not schools:
                             print("[Info] No schools found")
                         else:
-                            # Table header
-                            print("+----+------------------------------+----------------------+\n| ID | Name                         | Grading System       |\n+----+------------------------------+----------------------+")
+                            print("+----+------------------------------+----------------------+")
+                            print("| ID | Name                         | Grading System       |")
+                            print("+----+------------------------------+----------------------+")
                             for s in schools:
                                 print(f"| {str(s['id']).ljust(2)} | {s['name'][:28].ljust(28)} | {str(s['grading_system'])[:20].ljust(20)} |")
                             print("+----+------------------------------+----------------------+")
@@ -232,8 +232,9 @@ def main():
                         if not analytics:
                             print("[Info] No schools found")
                         else:
-                            # Table header
-                            print("+----+------------------------------+----------+----------+\n| ID | School Name                  | Students | Teachers |\n+----+------------------------------+----------+----------+")
+                            print("+----+------------------------------+----------+----------+")
+                            print("| ID | School Name                  | Students | Teachers |")
+                            print("+----+------------------------------+----------+----------+")
                             for a in analytics:
                                 print(f"| {str(a['school_id']).ljust(2)} | {a['name'][:28].ljust(28)} | {str(a['students']).ljust(8)} | {str(a['teachers']).ljust(8)} |")
                             print("+----+------------------------------+----------+----------+")
@@ -243,10 +244,20 @@ def main():
                         print("\nAudit Logs:")
                         if not logs:
                             print("[Info] No audit logs found")
-                        for log in logs:
-                            # Use 'details' if 'message' is not present
-                            details = log.get('message') or log.get('details') or ''
-                            print(f"- {log.get('timestamp', '')}: User {log.get('user_id', '')} {log.get('action', '')} - {details}")
+                        else:
+                            from collections import defaultdict
+                            grouped = defaultdict(list)
+                            for log in logs:
+                                grouped[log.get('action', 'other')].append(log)
+                            for action, group in grouped.items():
+                                print(f"\n=== {action.upper()} ===")
+                                print("+---------------------+----------+-----------------+------------------------------------------+")
+                                print("| Timestamp           | User ID  | Action          | Message                                  |")
+                                print("+---------------------+----------+-----------------+------------------------------------------+")
+                                for log in group:
+                                    details = log.get('message') or log.get('details') or ''
+                                    print(f"| {str(log.get('timestamp', ''))[:19].ljust(19)} | {str(log.get('user_id', ''))[:8].ljust(8)} | {str(log.get('action', ''))[:15].ljust(15)} | {details.replace('\n',' ')[:40].ljust(40)} |")
+                                print("+---------------------+----------+-----------------+------------------------------------------+")
                     elif role_choice == "4":
                         print("Logging out...")
                         break
@@ -270,8 +281,13 @@ def main():
                         print(f"\nStudents in {admin_school.name}:")
                         if not students:
                             print("[Info] No students found")
-                        for s in students:
-                            print(f"- ID: {s.id}, Name: {s.full_name}, Email: {s.email}")
+                        else:
+                            print("+----+--------------------------+--------------------------+--------------------------+")
+                            print("| ID | Name                     | Email                    | Username                 |")
+                            print("+----+--------------------------+--------------------------+--------------------------+")
+                            for s in students:
+                                print(f"| {str(s.id).ljust(2)} | {s.full_name[:24].ljust(24)} | {s.email[:24].ljust(24)} | {s.username[:24].ljust(24)} |")
+                            print("+----+--------------------------+--------------------------+--------------------------+")
                     elif admin_choice == "2":
                         class_name = validate_non_empty(input("Class Name: "), "Class Name")
                         if not class_name:
@@ -294,8 +310,13 @@ def main():
                             print(f"\nCourses in {admin_school.name}:")
                             if not courses:
                                 print("[Info] No courses found")
-                            for c in courses:
-                                print(f"- ID: {c['id']}, Title: {c['title']}, Code: {c['code']}, Teacher ID: {c['teacher_id'] or 'None'}")
+                            else:
+                                print("+----+--------------------------+----------+----------+")
+                                print("| ID | Title                    | Code     | Teacher  |")
+                                print("+----+--------------------------+----------+----------+")
+                                for c in courses:
+                                    print(f"| {str(c['id']).ljust(2)} | {c['title'][:24].ljust(24)} | {str(c['code'])[:8].ljust(8)} | {str(c['teacher_id'] or 'None')[:8].ljust(8)} |")
+                                print("+----+--------------------------+----------+----------+")
                         elif course_choice == "2":
                             title = validate_non_empty(input("Course Title: "), "Course Title")
                             if not title:
@@ -378,7 +399,7 @@ def main():
                         break
                     else:
                         print("[Error] Invalid option")
-                elif str(user.role) == UserRole.staff.value:
+                elif role_val == UserRole.staff.value:
                     print("\n--- Teacher Menu ---")
                     print("1. Upload Grade")
                     print("2. View My Courses")
@@ -407,13 +428,17 @@ def main():
                         else:
                             print(f"[Error] {msg}")
                     elif tch_choice == "2":
-                        from services.course_services import get_courses_for_teacher
                         courses = get_courses_for_teacher(user_id)
                         print("\nMy Courses:")
                         if not courses:
                             print("[Info] No courses assigned")
-                        for c in courses:
-                            print(f"- ID: {c['id']}, Title: {c['title']}, Code: {c['code']}")
+                        else:
+                            print("+----+--------------------------+----------+")
+                            print("| ID | Title                    | Code     |")
+                            print("+----+--------------------------+----------+")
+                            for c in courses:
+                                print(f"| {str(c['id']).ljust(2)} | {c['title'][:24].ljust(24)} | {str(c['code'])[:8].ljust(8)} |")
+                            print("+----+--------------------------+----------+")
                     elif tch_choice == "3":
                         class_id = validate_int(input("Class ID: "), "Class ID", min_val=1)
                         if not class_id:
@@ -426,29 +451,56 @@ def main():
                         print("\nMy Students:")
                         if not students:
                             print("[Info] No students found")
-                        for s in students:
-                            print(f"- ID: {s['id']}, Name: {s['full_name']}, Email: {s['email']}")
+                        else:
+                            print("+----+--------------------------+--------------------------+")
+                            print("| ID | Name                     | Email                    |")
+                            print("+----+--------------------------+--------------------------+")
+                            for s in students:
+                                print(f"| {str(s['id']).ljust(2)} | {s['full_name'][:24].ljust(24)} | {s['email'][:24].ljust(24)} |")
+                            print("+----+--------------------------+--------------------------+")
                     elif tch_choice == "4":
                         print("Logging out...")
                         break
                     else:
                         print("[Error] Invalid option")
-                elif str(user.role) == UserRole.student.value:
+                elif role_val == UserRole.student.value:
                     print("\n--- Student Menu ---")
                     print("1. View My Grades")
                     print("2. View My Profile")
                     print("3. Logout")
                     stu_choice = input("Select an option (1-3): ").strip()
                     if stu_choice == "1":
-                        from services.grade_services import get_grades
-                        course_id = validate_int(input("Course ID: "), "Course ID", min_val=1)
-                        if not course_id:
-                            continue
-                        grade = get_grades(user_id, course_id)
-                        if grade:
-                            print(f"Grade: {grade['value']} (Graded by: {grade['graded_by']})")
+                        from services.grade_services import get_grades_for_student
+                        grades = get_grades_for_student(user_id)
+                        print("\nMy Grades:")
+                        if not grades:
+                            print("[Info] No grades found")
                         else:
-                            print("[Info] No grade found")
+                            print("+----+----------------------+----------------------+--------+-------+----------+------------+")
+                            print("| ID | Course Title         | Course Code          | Score  | Grade | Semester | Date       |")
+                            print("+----+----------------------+----------------------+--------+-------+----------+------------+")
+                            total_score = 0
+                            total_credits = 0
+                            grade_points = {'A': 4.0, 'A+': 4.0, 'A-': 3.7, 'B': 3.0, 'B+': 3.3, 'B-': 2.7, 'C': 2.0, 'C+': 2.3, 'C-': 1.7, 'D': 1.0, 'D+': 1.3, 'D-': 0.7, 'F': 0.0}
+                            for g in grades:
+                                score = g.get('value', 0)
+                                grade = g.get('grade', '-')
+                                credits = g.get('credit_hours', 1)
+                                total_score += score
+                                total_credits += credits
+                                print(f"| {str(g.get('id', '-')).ljust(2)} | {str(g.get('course_title', '-'))[:20].ljust(20)} | {str(g.get('course_code', '-'))[:20].ljust(20)} | {str(score).ljust(6)} | {str(grade).ljust(5)} | {str(g.get('semester', '-') or '-').ljust(8)} | {str(g.get('created_at', '-') or '-').split('T')[0].ljust(10)} |")
+                            print("+----+----------------------+----------------------+--------+-------+----------+------------+")
+                            avg_score = total_score / len(grades) if grades else 0
+                            gpa_points = 0
+                            gpa_courses = 0
+                            for g in grades:
+                                grade = g.get('grade', '-')
+                                credits = g.get('credit_hours', 1)
+                                if grade in grade_points:
+                                    gpa_points += grade_points[grade] * credits
+                                    gpa_courses += credits
+                            gpa = gpa_points / gpa_courses if gpa_courses else 0
+                            print(f"\nSummary: Average Score: {avg_score:.2f} | GPA: {gpa:.2f} | Total Courses: {len(grades)}")
                     elif stu_choice == "2":
                         print(f"\nProfile:")
                         print(f"User ID: {user_id}")
@@ -462,7 +514,7 @@ def main():
                     else:
                         print("[Error] Invalid option")
                 else:
-                    print("[Error] Unknown role. Logging out.")
+                    print(f"[Error] Unknown role: {role_val}. Logging out.")
                     break
         elif choice == "4":
             print("Exiting...")
