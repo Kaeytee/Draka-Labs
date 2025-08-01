@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - SIAMS</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="error-container">
+        <div class="stars-background"></div>
+        <div class="particles-container" id="particlesContainer"></div>
+        
+        <div class="error-panel glass-panel">
+            <div class="error-code" id="errorCode">404</div>
+            <div class="error-message">
+                <h1>System Error</h1>
+                <p id="errorDescription">The requested resource could not be found.</p>
+            </div>
+            
+            <div class="error-actions">
+                <button class="retry-btn" id="retryBtn">
+                    <span>Retry</span>
+                    <div class="btn-glow"></div>
+                </button>
+                <button class="back-btn" id="backBtn">
+                    <span>Go Back</span>
+                    <div class="btn-glow"></div>
+                </button>
+                <a href="index.html" class="home-btn">
+                    <span>Home</span>
+                    <div class="btn-glow"></div>
+                </a>
+            </div>
+        </div>
+
+        <div class="error-details glass-panel" id="errorDetails">
+            <h3>Error Details</h3>
+            <div class="details-content">
+                <p><strong>Timestamp:</strong> <span id="errorTimestamp"></span></p>
+                <p><strong>User Agent:</strong> <span id="userAgent"></span></p>
+                <p><strong>URL:</strong> <span id="errorUrl"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/error.js"></script>
+</body>
+</html>

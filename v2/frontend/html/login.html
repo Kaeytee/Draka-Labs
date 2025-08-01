@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SIAMS</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="stars-background"></div>
+        <div class="particles-container" id="particlesContainer"></div>
+        
+        <div class="auth-panel glass-panel">
+            <div class="auth-header">
+                <h1>Access Portal</h1>
+                <div class="role-indicator" id="roleIndicator">
+                    <span id="selectedRole">Select Role</span>
+                </div>
+            </div>
+
+            <form class="auth-form" id="loginForm">
+                <div class="form-group">
+                    <label for="role">Role</label>
+                    <select id="role" name="role" required aria-label="Select your role">
+                        <option value="">Select Role</option>
+                        <option value="admin">Administrator</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="student">Student</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required aria-label="Enter your email">
+                    <div class="input-glow"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required aria-label="Enter your password">
+                    <div class="input-glow"></div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="loginSubmit">
+                    <span>Login</span>
+                    <div class="btn-glow"></div>
+                </button>
+
+                <div class="auth-links">
+                    <a href="register.html" class="register-link">Register as Admin</a>
+                    <a href="index.html" class="back-link">← Back to Home</a>
+                </div>
+            </form>
+
+            <div class="error-overlay" id="errorOverlay">
+                <div class="error-content">
+                    <div class="error-icon">⚠️</div>
+                    <p id="errorMessage"></p>
+                    <button class="error-close" id="errorClose">×</button>
+                </div>
+            </div>
+
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-spinner">
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                </div>
+                <p>Authenticating...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/auth.js"></script>
+</body>
+</html>

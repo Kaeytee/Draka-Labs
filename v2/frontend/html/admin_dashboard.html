@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SIAMS</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="stars-background"></div>
+        
+        <nav class="sidebar glass-panel" role="navigation" aria-label="Admin navigation">
+            <div class="sidebar-header">
+                <h2>SIAMS Admin</h2>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        <img src="/placeholder.svg?height=40&width=40" alt="Admin Avatar" id="avatarImg">
+                    </div>
+                    <span id="userName">Administrator</span>
+                </div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li><a href="#dashboard" class="nav-link active" data-section="dashboard">
+                    <span class="nav-icon">📊</span>Dashboard
+                </a></li>
+                <li><a href="#schools" class="nav-link" data-section="schools">
+                    <span class="nav-icon">🏫</span>Schools
+                </a></li>
+                <li><a href="#classes" class="nav-link" data-section="classes">
+                    <span class="nav-icon">🎓</span>Classes
+                </a></li>
+                <li><a href="#courses" class="nav-link" data-section="courses">
+                    <span class="nav-icon">📚</span>Courses
+                </a></li>
+                <li><a href="#students" class="nav-link" data-section="students">
+                    <span class="nav-icon">👥</span>Students
+                </a></li>
+                <li><a href="#import" class="nav-link" data-section="import">
+                    <span class="nav-icon">📥</span>Import Data
+                </a></li>
+            </ul>
+            
+            <button class="logout-btn" id="logoutBtn">
+                <span class="nav-icon">🚪</span>Logout
+            </button>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-bar glass-panel">
+                <h1 id="pageTitle">Dashboard</h1>
+                <div class="top-bar-actions">
+                    <button class="notification-btn" aria-label="Notifications">
+                        <span class="notification-icon">🔔</span>
+                        <span class="notification-badge">3</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-area" id="contentArea">
+                <!-- Dashboard Overview -->
+                <section class="dashboard-section" id="dashboardSection">
+                    <div class="stats-grid">
+                        <div class="stat-card glass-panel">
+                            <div class="stat-icon">🏫</div>
+                            <div class="stat-content">
+                                <h3 id="schoolCount">0</h3>
+                                <p>Schools</p>
+                            </div>
+                            <div class="stat-trend">+12%</div>
+                        </div>
+                        <div class="stat-card glass-panel">
+                            <div class="stat-icon">🎓</div>
+                            <div class="stat-content">
+                                <h3 id="classCount">0</h3>
+                                <p>Classes</p>
+                            </div>
+                            <div class="stat-trend">+8%</div>
+                        </div>
+                        <div class="stat-card glass-panel">
+                            <div class="stat-icon">📚</div>
+                            <div class="stat-content">
+                                <h3 id="courseCount">0</h3>
+                                <p>Courses</p>
+                            </div>
+                            <div class="stat-trend">+15%</div>
+                        </div>
+                        <div class="stat-card glass-panel">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-content">
+                                <h3 id="studentCount">0</h3>
+                                <p>Students</p>
+                            </div>
+                            <div class="stat-trend">+23%</div>
+                        </div>
+                    </div>
+
+                    <div class="action-cards">
+                        <div class="action-card glass-panel" data-action="create-school">
+                            <div class="action-icon">🏫</div>
+                            <h3>Create School</h3>
+                            <p>Add a new school to the system</p>
+                            <button class="action-btn">Create</button>
+                        </div>
+                        <div class="action-card glass-panel" data-action="import-students">
+                            <div class="action-icon">📥</div>
+                            <h3>Import Students</h3>
+                            <p>Bulk import students via CSV/Excel</p>
+                            <button class="action-btn">Import</button>
+                        </div>
+                        <div class="action-card glass-panel" data-action="manage-users">
+                            <div class="action-icon">👥</div>
+                            <h3>Manage Users</h3>
+                            <p>View and manage system users</p>
+                            <button class="action-btn">Manage</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Dynamic content sections will be loaded here -->
+                <section class="content-section hidden" id="schoolsSection"></section>
+                <section class="content-section hidden" id="classesSection"></section>
+                <section class="content-section hidden" id="coursesSection"></section>
+                <section class="content-section hidden" id="studentsSection"></section>
+                <section class="content-section hidden" id="importSection"></section>
+            </div>
+        </main>
+
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <p>Loading...</p>
+        </div>
+
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal glass-panel" id="modal">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Modal Title</h3>
+                    <button class="modal-close" id="modalClose">×</button>
+                </div>
+                <div class="modal-content" id="modalContent">
+                    <!-- Dynamic modal content -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/admin.js"></script>
+</body>
+</html>

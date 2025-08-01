@@ -1,72 +1,72 @@
 # Populated Demo Data
 
 ## Demo School 1 (DS)
-- **Admin:** auser / auser@ds.schoolsystem.com / DS+!+DS71642119
+- **Admin:** auser / admin1@school.com / DS!10001
   - **Class:** Class 1 - DS (ID: 1)
-    - Teacher: tuser / tuser@ds.schoolsystem.com / DS+!+881677
-    - Teacher: tuser_1 / tuser_1@ds.schoolsystem.com / DS+!+341366
+    - Teacher: tuser / tuser@ds.schoolsystem.com / DS!410159
+    - Teacher: tuser_1 / tuser_1@ds.schoolsystem.com / DS!484199
     - Course: Course 1 - Class 1 - DS (Code: C111, ID: 1)
     - Course: Course 2 - Class 1 - DS (Code: C121, ID: 2)
-    - Student: suser / suser@st.ds.schoolsystem.com / DS+!+suser
-    - Student: suser_1 / suser_1@st.ds.schoolsystem.com / DS+!+suser_1
-    - Student: suser_2 / suser_2@st.ds.schoolsystem.com / DS+!+suser_2
+    - Student: suser / suser@st.ds.schoolsystem.com / DS!suser
+    - Student: suser_1 / suser_1@st.ds.schoolsystem.com / DS!suser_1
+    - Student: suser_2 / suser_2@st.ds.schoolsystem.com / DS!suser_2
   - **Class:** Class 2 - DS (ID: 2)
-    - Teacher: tuser_2 / tuser_2@ds.schoolsystem.com / DS+!+302653
-    - Teacher: tuser_3 / tuser_3@ds.schoolsystem.com / DS+!+912469
+    - Teacher: tuser_2 / tuser_2@ds.schoolsystem.com / DS!355541
+    - Teacher: tuser_3 / tuser_3@ds.schoolsystem.com / DS!459404
     - Course: Course 1 - Class 2 - DS (Code: C211, ID: 3)
     - Course: Course 2 - Class 2 - DS (Code: C221, ID: 4)
-    - Student: suser_3 / suser_3@st.ds.schoolsystem.com / DS+!+suser_3
-    - Student: suser_4 / suser_4@st.ds.schoolsystem.com / DS+!+suser_4
-    - Student: suser_5 / suser_5@st.ds.schoolsystem.com / DS+!+suser_5
+    - Student: suser_3 / suser_3@st.ds.schoolsystem.com / DS!suser_3
+    - Student: suser_4 / suser_4@st.ds.schoolsystem.com / DS!suser_4
+    - Student: suser_5 / suser_5@st.ds.schoolsystem.com / DS!suser_5
   - **Class:** Class 3 - DS (ID: 3)
-    - Teacher: tuser_4 / tuser_4@ds.schoolsystem.com / DS+!+794684
-    - Teacher: tuser_5 / tuser_5@ds.schoolsystem.com / DS+!+801110
+    - Teacher: tuser_4 / tuser_4@ds.schoolsystem.com / DS!122465
+    - Teacher: tuser_5 / tuser_5@ds.schoolsystem.com / DS!109545
     - Course: Course 1 - Class 3 - DS (Code: C311, ID: 5)
     - Course: Course 2 - Class 3 - DS (Code: C321, ID: 6)
-    - Student: suser_6 / suser_6@st.ds.schoolsystem.com / DS+!+suser_6
-    - Student: suser_7 / suser_7@st.ds.schoolsystem.com / DS+!+suser_7
-    - Student: suser_8 / suser_8@st.ds.schoolsystem.com / DS+!+suser_8
+    - Student: suser_6 / suser_6@st.ds.schoolsystem.com / DS!suser_6
+    - Student: suser_7 / suser_7@st.ds.schoolsystem.com / DS!suser_7
+    - Student: suser_8 / suser_8@st.ds.schoolsystem.com / DS!suser_8
   - **Class:** Class 4 - DS (ID: 4)
-    - Teacher: tuser_6 / tuser_6@ds.schoolsystem.com / DS+!+625772
-    - Teacher: tuser_7 / tuser_7@ds.schoolsystem.com / DS+!+689436
+    - Teacher: tuser_6 / tuser_6@ds.schoolsystem.com / DS!913100
+    - Teacher: tuser_7 / tuser_7@ds.schoolsystem.com / DS!243520
     - Course: Course 1 - Class 4 - DS (Code: C411, ID: 7)
     - Course: Course 2 - Class 4 - DS (Code: C421, ID: 8)
-    - Student: suser_9 / suser_9@st.ds.schoolsystem.com / DS+!+suser_9
-    - Student: suser_10 / suser_10@st.ds.schoolsystem.com / DS+!+suser_10
-    - Student: suser_11 / suser_11@st.ds.schoolsystem.com / DS+!+suser_11
+    - Student: suser_9 / suser_9@st.ds.schoolsystem.com / DS!suser_9
+    - Student: suser_10 / suser_10@st.ds.schoolsystem.com / DS!suser_10
+    - Student: suser_11 / suser_11@st.ds.schoolsystem.com / DS!suser_11
 
 ## Demo School 2 (DS)
-- **Admin:** auser_1 / auser_1@ds.schoolsystem.com / DS+!+DS49678883
+- **Admin:** auser_1 / admin2@school.com / DS!20001
   - **Class:** Class 1 - DS (ID: 5)
-    - Teacher: tuser_8 / tuser_8@ds.schoolsystem.com / DS+!+069401
-    - Teacher: tuser_9 / tuser_9@ds.schoolsystem.com / DS+!+653289
+    - Teacher: tuser_8 / tuser_8@ds.schoolsystem.com / DS!610573
+    - Teacher: tuser_9 / tuser_9@ds.schoolsystem.com / DS!210759
     - Course: Course 1 - Class 1 - DS (Code: C112, ID: 9)
     - Course: Course 2 - Class 1 - DS (Code: C122, ID: 10)
-    - Student: suser_12 / suser_12@st.ds.schoolsystem.com / DS+!+suser_12
-    - Student: suser_13 / suser_13@st.ds.schoolsystem.com / DS+!+suser_13
-    - Student: suser_14 / suser_14@st.ds.schoolsystem.com / DS+!+suser_14
+    - Student: suser_12 / suser_12@st.ds.schoolsystem.com / DS!suser_12
+    - Student: suser_13 / suser_13@st.ds.schoolsystem.com / DS!suser_13
+    - Student: suser_14 / suser_14@st.ds.schoolsystem.com / DS!suser_14
   - **Class:** Class 2 - DS (ID: 6)
-    - Teacher: tuser_10 / tuser_10@ds.schoolsystem.com / DS+!+096711
-    - Teacher: tuser_11 / tuser_11@ds.schoolsystem.com / DS+!+728370
+    - Teacher: tuser_10 / tuser_10@ds.schoolsystem.com / DS!600876
+    - Teacher: tuser_11 / tuser_11@ds.schoolsystem.com / DS!382700
     - Course: Course 1 - Class 2 - DS (Code: C212, ID: 11)
     - Course: Course 2 - Class 2 - DS (Code: C222, ID: 12)
-    - Student: suser_15 / suser_15@st.ds.schoolsystem.com / DS+!+suser_15
-    - Student: suser_16 / suser_16@st.ds.schoolsystem.com / DS+!+suser_16
-    - Student: suser_17 / suser_17@st.ds.schoolsystem.com / DS+!+suser_17
+    - Student: suser_15 / suser_15@st.ds.schoolsystem.com / DS!suser_15
+    - Student: suser_16 / suser_16@st.ds.schoolsystem.com / DS!suser_16
+    - Student: suser_17 / suser_17@st.ds.schoolsystem.com / DS!suser_17
   - **Class:** Class 3 - DS (ID: 7)
-    - Teacher: tuser_12 / tuser_12@ds.schoolsystem.com / DS+!+159629
-    - Teacher: tuser_13 / tuser_13@ds.schoolsystem.com / DS+!+470565
+    - Teacher: tuser_12 / tuser_12@ds.schoolsystem.com / DS!629272
+    - Teacher: tuser_13 / tuser_13@ds.schoolsystem.com / DS!242446
     - Course: Course 1 - Class 3 - DS (Code: C312, ID: 13)
     - Course: Course 2 - Class 3 - DS (Code: C322, ID: 14)
-    - Student: suser_18 / suser_18@st.ds.schoolsystem.com / DS+!+suser_18
-    - Student: suser_19 / suser_19@st.ds.schoolsystem.com / DS+!+suser_19
-    - Student: suser_20 / suser_20@st.ds.schoolsystem.com / DS+!+suser_20
+    - Student: suser_18 / suser_18@st.ds.schoolsystem.com / DS!suser_18
+    - Student: suser_19 / suser_19@st.ds.schoolsystem.com / DS!suser_19
+    - Student: suser_20 / suser_20@st.ds.schoolsystem.com / DS!suser_20
   - **Class:** Class 4 - DS (ID: 8)
-    - Teacher: tuser_14 / tuser_14@ds.schoolsystem.com / DS+!+022754
-    - Teacher: tuser_15 / tuser_15@ds.schoolsystem.com / DS+!+507892
+    - Teacher: tuser_14 / tuser_14@ds.schoolsystem.com / DS!966901
+    - Teacher: tuser_15 / tuser_15@ds.schoolsystem.com / DS!325542
     - Course: Course 1 - Class 4 - DS (Code: C412, ID: 15)
     - Course: Course 2 - Class 4 - DS (Code: C422, ID: 16)
-    - Student: suser_21 / suser_21@st.ds.schoolsystem.com / DS+!+suser_21
-    - Student: suser_22 / suser_22@st.ds.schoolsystem.com / DS+!+suser_22
-    - Student: suser_23 / suser_23@st.ds.schoolsystem.com / DS+!+suser_23
+    - Student: suser_21 / suser_21@st.ds.schoolsystem.com / DS!suser_21
+    - Student: suser_22 / suser_22@st.ds.schoolsystem.com / DS!suser_22
+    - Student: suser_23 / suser_23@st.ds.schoolsystem.com / DS!suser_23
 

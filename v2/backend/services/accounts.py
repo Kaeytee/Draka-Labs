@@ -143,10 +143,11 @@ def register_superuser(full_name, phone, email, gender, password, date_of_birth=
 		db.close()
 
 # School admin registration (for schools registering on the platform)
-def register_school_admin(school_name, full_name, phone, email, gender, grading_system, date_of_birth=None, acting_user=None):
+def register_school_admin(school_name, full_name, phone, email, gender, grading_system, date_of_birth=None, acting_user=None, initials= None):
 	"""
 	Register a new school and its admin. Only superuser can register a new school.
 	"""
+	from models.user import UserRole  # Ensure UserRole is imported before use
 	db = SessionLocal()
 	try:
 		# Restrict to superuser only
@@ -182,6 +183,7 @@ def register_school_admin(school_name, full_name, phone, email, gender, grading_
 			hashed_password=hashed_password,
 			email=admin_email,
 			role=UserRole.admin,
+			initials=None,
 			gender=Gender[gender.lower()] if isinstance(gender, str) else gender,
 			date_of_birth=date_of_birth or datetime.date(1980, 1, 1)
 		)
@@ -252,7 +254,7 @@ def create_student_account(db, full_name, school_initials, gender, date_of_birth
 	log_audit(student.id, "create_student_account", f"Student {username} created for {full_name}")
 	return student, password
 
-def create_teacher_account(db, full_name, school_initials, gender="male", date_of_birth=None):
+def create_teacher_account(db, full_name, school_initials, school_id, gender="male", date_of_birth=None):
 	"""
 	Auto generate a teacher account (called by microservice , not user )
 	Now accepts a gender parameter (default 'male').

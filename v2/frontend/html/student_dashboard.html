@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - SIAMS</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="stars-background"></div>
+        
+        <nav class="sidebar glass-panel" role="navigation" aria-label="Student navigation">
+            <div class="sidebar-header">
+                <h2>SIAMS Student</h2>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        <img src="/placeholder.svg?height=40&width=40" alt="Student Avatar" id="avatarImg">
+                    </div>
+                    <span id="userName">Student</span>
+                </div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li><a href="#dashboard" class="nav-link active" data-section="dashboard">
+                    <span class="nav-icon">📊</span>Dashboard
+                </a></li>
+                <li><a href="#grades" class="nav-link" data-section="grades">
+                    <span class="nav-icon">📈</span>My Grades
+                </a></li>
+                <li><a href="#profile" class="nav-link" data-section="profile">
+                    <span class="nav-icon">👤</span>Profile
+                </a></li>
+            </ul>
+            
+            <button class="logout-btn" id="logoutBtn">
+                <span class="nav-icon">🚪</span>Logout
+            </button>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-bar glass-panel">
+                <h1 id="pageTitle">Dashboard</h1>
+                <div class="top-bar-actions">
+                    <button class="notification-btn" aria-label="Notifications">
+                        <span class="notification-icon">🔔</span>
+                        <span class="notification-badge">1</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-area" id="contentArea">
+                <!-- Student Dashboard Overview -->
+                <section class="dashboard-section" id="dashboardSection">
+                    <div class="profile-card glass-panel">
+                        <div class="profile-image">
+                            <img src="/placeholder.svg?height=80&width=80" alt="Profile Picture" id="profileImage">
+                            <button class="edit-profile-btn" id="editProfileBtn">✏️</button>
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="studentName">Student Name</h2>
+                            <p id="studentId">Student ID: #12345</p>
+                            <p id="studentClass">Class: Not Assigned</p>
+                        </div>
+                    </div>
+
+                    <div class="grades-overview glass-panel">
+                        <h3>Recent Grades</h3>
+                        <div class="grades-summary" id="gradesSummary">
+                            <!-- Grades will be loaded here -->
+                        </div>
+                        <button class="view-all-btn" data-section="grades">View All Grades</button>
+                    </div>
+
+                    <div class="academic-info glass-panel">
+                        <h3>Academic Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">GPA:</span>
+                                <span class="info-value" id="gpaValue">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Total Courses:</span>
+                                <span class="info-value" id="totalCourses">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Completed:</span>
+                                <span class="info-value" id="completedCourses">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Dynamic content sections -->
+                <section class="content-section hidden" id="gradesSection"></section>
+                <section class="content-section hidden" id="profileSection"></section>
+            </div>
+        </main>
+
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <p>Loading...</p>
+        </div>
+
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal glass-panel" id="modal">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Modal Title</h3>
+                    <button class="modal-close" id="modalClose">×</button>
+                </div>
+                <div class="modal-content" id="modalContent">
+                    <!-- Dynamic modal content -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/student.js"></script>
+</body>
+</html>

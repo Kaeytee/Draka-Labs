@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - SIAMS</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="icon" href="/placeholder.svg?height=32&width=32" type="image/svg+xml">
+</head>
+<body>
+    <div class="stars-background"></div>
+    <div class="particles-container" id="particlesContainer"></div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar glass-panel" id="sidebar">
+            <div class="sidebar-header">
+                <h2>SIAMS</h2>
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <img src="/placeholder.svg?height=40&width=40" alt="User Avatar" id="avatarImg">
+                    </div>
+                    <span id="userName">Loading...</span>
+                </div>
+            </div>
+
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#" class="nav-link" data-section="overview"><span class="nav-icon">📊</span> Overview</a></li>
+                <li><a href="#" class="nav-link" data-section="performance"><span class="nav-icon">📈</span> Performance</a></li>
+                <li><a href="#" class="nav-link" data-section="grades"><span class="nav-icon">🎯</span> Grade Analysis</a></li>
+                <li><a href="#" class="nav-link" data-section="trends"><span class="nav-icon">📉</span> Trends</a></li>
+                <li><a href="#" class="nav-link" data-section="comparison"><span class="nav-icon">⚖️</span> Comparison</a></li>
+                <li><a href="#" class="nav-link" data-section="reports"><span class="nav-icon">📋</span> Reports</a></li>
+            </ul>
+
+            <button class="logout-btn" id="logoutBtn">
+                <span class="nav-icon">🚪</span>
+                Logout
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar glass-panel">
+                <h1 id="pageTitle">Analytics Dashboard</h1>
+                <div class="top-bar-actions">
+                    <div class="date-range-selector">
+                        <select id="dateRange" class="form-control">
+                            <option value="7">Last 7 days</option>
+                            <option value="30" selected>Last 30 days</option>
+                            <option value="90">Last 3 months</option>
+                            <option value="365">Last year</option>
+                            <option value="all">All time</option>
+                        </select>
+                    </div>
+                    <button class="action-btn" id="exportBtn">
+                        <span>📊</span> Export
+                    </button>
+                    <button class="action-btn" id="refreshBtn">
+                        <span>🔄</span> Refresh
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <!-- Overview Section -->
+                <section class="content-section" id="overview-section">
+                    <div class="analytics-grid">
+                        <div class="chart-container glass-panel">
+                            <div class="chart-header">
+                                <h3>Performance Overview</h3>
+                                <div class="chart-controls">
+                                    <button class="chart-btn active" data-chart="line">Line</button>
+                                    <button class="chart-btn" data-chart="bar">Bar</button>
+                                </div>
+                            </div>
+                            <div class="chart-content">
+                                <canvas id="overviewChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-container glass-panel">
+                            <div class="chart-header">
+                                <h3>Grade Distribution</h3>
+                            </div>
+                            <div class="chart-content">
+                                <canvas id="gradeDistributionChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="stats-summary glass-panel">
+                            <h3>Key Metrics</h3>
+                            <div class="metrics-grid">
+                                <div class="metric-item">
+                                    <div class="metric-value" id="avgGPA">-</div>
+                                    <div class="metric-label">Average GPA</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value" id="totalStudents">-</div>
+                                    <div class="metric-label">Total Students</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value" id="passRate">-</div>
+                                    <div class="metric-label">Pass Rate</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value" id="improvementRate">-</div>
+                                    <div class="metric-label">Improvement</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chart-container glass-panel">
+                            <div class="chart-header">
+                                <h3>Course Performance</h3>
+                            </div>
+                            <div class="chart-content">
+                                <canvas id="coursePerformanceChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Performance Section -->
+                <section class="content-section hidden" id="performance-section">
+                    <div class="analytics-grid">
+                        <div class="chart-container glass-panel full-width">
+                            <div class="chart-header">
+                                <h3>Student Performance Trends</h3>
+                                <div class="chart-filters">
+                                    <select id="performanceFilter" class="form-control">
+                                        <option value="all">All Students</option>
+                                        <option value="top">Top Performers</option>
+                                        <option value="average">Average Performers</option>
+                                        <option value="struggling">Struggling Students</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="chart-content">
+                                <canvas id="performanceTrendChart" width="800" height="300"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-container glass-panel">
+                            <div class="chart-header">
+                                <h3>Subject Performance</h3>
+                            </div>
+                            <div class="chart-content">
+                                <canvas id="subjectPerformanceChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-container glass-panel">
+                            <div class="chart-header">
+                                <h3>Performance by Class</h3>
+                            </div>
+                            <div class="chart-content">
+                                <canvas id="classPerformanceChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Grades Section -->
+                <section class="content-section hidden" id="grades-section">
+                    <div class="analytics-grid">
+                        <div class="chart-container glass-panel">
+                            <div class="chart-header">
+                                <h3>Grade Trends Over Time</h3>
+                            </div>
+                            <div class="chart-content">
+                                <canvas id="gradeTrendsChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-container glass-panel">
+                            <div class="chart-header">
+                                <h3>Grade Distribution by Subject</h3>
+                            </div>
+                            <div class="chart-content">
+                                <canvas id="subjectGradesChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="grade-analysis glass-panel">
+                            <h3>Grade Analysis</h3>
+                            <div class="analysis-content" id="gradeAnalysisContent">
+                                <!-- Dynamic content will be inserted here -->
+                            </div>
+                        </div>
+
+                        <div class="chart-container glass-panel">
+                            <div class="chart-header">
+                                <h3>Pass/Fail Rates</h3>
+                            </div>
+                            <div class="chart-content">
+                                <canvas id="passFailChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Trends Section -->
+                <section class="content-section hidden" id="trends-section">
+                    <div class="analytics-grid">
+                        <div class="chart-container glass-panel full-width">
+                            <div class="chart-header">
+                                <h3>Academic Trends</h3>
+                                <div class="trend-controls">
+                                    <button class="trend-btn active" data-trend="semester">Semester</button>
+                                    <button class="trend-btn" data-trend="monthly">Monthly</button>
+                                    <button class="trend-btn" data-trend="weekly">Weekly</button>
+                                </div>
+                            </div>
+                            <div class="chart-content">
+                                <canvas id="academicTrendsChart" width="800" height="300"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="trend-insights glass-panel">
+                            <h3>Trend Insights</h3>
+                            <div class="insights-list" id="trendInsights">
+                                <!-- Dynamic insights will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Comparison Section -->
+                <section class="content-section hidden" id="comparison-section">
+                    <div class="analytics-grid">
+                        <div class="comparison-controls glass-panel">
+                            <h3>Compare Performance</h3>
+                            <div class="comparison-form">
+                                <div class="form-group">
+                                    <label>Compare By:</label>
+                                    <select id="compareBy" class="form-control">
+                                        <option value="class">Class</option>
+                                        <option value="subject">Subject</option>
+                                        <option value="semester">Semester</option>
+                                        <option value="teacher">Teacher</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Select Items:</label>
+                                    <div class="multi-select" id="comparisonItems">
+                                        <!-- Dynamic options will be inserted here -->
+                                    </div>
+                                </div>
+                                <button class="action-btn" id="generateComparison">Generate Comparison</button>
+                            </div>
+                        </div>
+
+                        <div class="chart-container glass-panel full-width">
+                            <div class="chart-header">
+                                <h3>Comparison Results</h3>
+                            </div>
+                            <div class="chart-content">
+                                <canvas id="comparisonChart" width="800" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Reports Section -->
+                <section class="content-section hidden" id="reports-section">
+                    <div class="reports-grid">
+                        <div class="report-generator glass-panel">
+                            <h3>Generate Report</h3>
+                            <div class="report-form">
+                                <div class="form-group">
+                                    <label>Report Type:</label>
+                                    <select id="reportType" class="form-control">
+                                        <option value="performance">Performance Report</option>
+                                        <option value="grades">Grade Report</option>
+                                        <option value="attendance">Attendance Report</option>
+                                        <option value="summary">Summary Report</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Date Range:</label>
+                                    <div class="date-inputs">
+                                        <input type="date" id="reportStartDate" class="form-control">
+                                        <input type="date" id="reportEndDate" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Format:</label>
+                                    <select id="reportFormat" class="form-control">
+                                        <option value="pdf">PDF</option>
+                                        <option value="excel">Excel</option>
+                                        <option value="csv">CSV</option>
+                                    </select>
+                                </div>
+                                <button class="action-btn" id="generateReport">Generate Report</button>
+                            </div>
+                        </div>
+
+                        <div class="recent-reports glass-panel">
+                            <h3>Recent Reports</h3>
+                            <div class="reports-list" id="recentReportsList">
+                                <!-- Dynamic reports list will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+        </div>
+        <p>Loading analytics data...</p>
+    </div>
+
+    <script type="module" src="../js/analytics.js"></script>
+</body>
+</html>

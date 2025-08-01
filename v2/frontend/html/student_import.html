@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Import - SIAMS</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="import-container">
+        <div class="stars-background"></div>
+        
+        <header class="import-header glass-panel">
+            <div class="header-content">
+                <button class="back-btn" id="backBtn" aria-label="Go back">
+                    <span class="nav-icon">←</span> Back
+                </button>
+                <h1>Student Import</h1>
+                <div class="header-actions">
+                    <button class="download-template-btn" id="downloadTemplateBtn" aria-label="Download CSV template">
+                        <span class="nav-icon">📥</span>
+                        Download Template
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="import-content">
+            <!-- Import Instructions -->
+            <section class="instructions-section glass-panel">
+                <div class="section-header">
+                    <h2>Import Instructions</h2>
+                    <button class="toggle-instructions-btn" id="toggleInstructionsBtn" aria-label="Toggle instructions">
+                        <span class="toggle-icon">−</span>
+                    </button>
+                </div>
+                
+                <div class="instructions-content" id="instructionsContent">
+                    <div class="instruction-grid">
+                        <div class="instruction-item">
+                            <div class="instruction-icon">📋</div>
+                            <h3>Prepare Your Data</h3>
+                            <p>Use the CSV template with required columns: Full Name, Date of Birth, Gender, Email, Class ID</p>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon">📁</div>
+                            <h3>File Format</h3>
+                            <p>Upload CSV or Excel files. Maximum file size: 10MB. Ensure data is properly formatted.</p>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon">🔐</div>
+                            <h3>Account Creation</h3>
+                            <p>Student accounts will be created automatically with email as username and generated passwords.</p>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon">📧</div>
+                            <h3>Notifications</h3>
+                            <p>Login credentials will be sent to students via email after successful import.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- File Upload Section -->
+            <section class="upload-section glass-panel">
+                <div class="section-header">
+                    <h2>Upload Student Data</h2>
+                </div>
+                
+                <div class="upload-area" id="uploadArea">
+                    <div class="file-input-container" id="fileInputContainer">
+                        <!-- File input will be created here -->
+                    </div>
+                </div>
+
+                <div class="class-selection" id="classSelection">
+                    <div class="form-group">
+                        <label for="defaultClassSelect">Default Class (Optional)</label>
+                        <select id="defaultClassSelect" name="defaultClassId">
+                            <option value="">Select default class for students without Class ID</option>
+                        </select>
+                        <div class="input-glow"></div>
+                        <small class="form-help">
+                            If students don't have Class ID in CSV, they will be assigned to this class
+                        </small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Preview Section -->
+            <section class="preview-section glass-panel hidden" id="previewSection">
+                <div class="section-header">
+                    <h2>Data Preview</h2>
+                    <div class="preview-stats" id="previewStats">
+                        <!-- Stats will be populated here -->
+                    </div>
+                </div>
+                
+                <div class="preview-controls">
+                    <div class="validation-summary" id="validationSummary">
+                        <!-- Validation results will be shown here -->
+                    </div>
+                    
+                    <div class="preview-actions">
+                        <button class="import-btn" id="importBtn" disabled>
+                            <span>Import Students</span>
+                            <div class="btn-glow"></div>
+                        </button>
+                        <button class="cancel-btn" id="cancelBtn">
+                            <span>Cancel</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="previewTable">
+                        <thead id="previewTableHead">
+                            <!-- Headers will be populated dynamically -->
+                        </thead>
+                        <tbody id="previewTableBody">
+                            <!-- Preview data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-pagination" id="previewPagination">
+                    <button class="pagination-btn" id="prevPreviewBtn" disabled>
+                        <span>← Previous</span>
+                    </button>
+                    <span class="pagination-info" id="previewPaginationInfo">
+                        Showing 1-10 of 0
+                    </span>
+                    <button class="pagination-btn" id="nextPreviewBtn" disabled>
+                        <span>Next →</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Import Progress Section -->
+            <section class="progress-section glass-panel hidden" id="progressSection">
+                <div class="section-header">
+                    <h2>Import Progress</h2>
+                </div>
+                
+                <div class="progress-content">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">0%</div>
+                    </div>
+                    
+                    <div class="progress-details" id="progressDetails">
+                        <div class="progress-item">
+                            <span class="progress-label">Total Students:</span>
+                            <span class="progress-value" id="totalStudents">0</span>
+                        </div>
+                        <div class="progress-item">
+                            <span class="progress-label">Processed:</span>
+                            <span class="progress-value" id="processedStudents">0</span>
+                        </div>
+                        <div class="progress-item">
+                            <span class="progress-label">Successful:</span>
+                            <span class="progress-value success" id="successfulStudents">0</span>
+                        </div>
+                        <div class="progress-item">
+                            <span class="progress-label">Failed:</span>
+                            <span class="progress-value error" id="failedStudents">0</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-log" id="progressLog">
+                        <!-- Import log will be shown here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Import Results Section -->
+            <section class="results-section glass-panel hidden" id="resultsSection">
+                <div class="section-header">
+                    <h2>Import Results</h2>
+                </div>
+                
+                <div class="results-summary" id="resultsSummary">
+                    <!-- Results summary will be populated here -->
+                </div>
+
+                <div class="results-actions">
+                    <button class="download-results-btn" id="downloadResultsBtn">
+                        <span>📥 Download Results</span>
+                        <div class="btn-glow"></div>
+                    </button>
+                    <button class="new-import-btn" id="newImportBtn">
+                        <span>🔄 New Import</span>
+                    </button>
+                </div>
+
+                <div class="results-tabs">
+                    <button class="tab-btn active" data-tab="successful">
+                        Successful (<span id="successfulCount">0</span>)
+                    </button>
+                    <button class="tab-btn" data-tab="failed">
+                        Failed (<span id="failedCount">0</span>)
+                    </button>
+                </div>
+
+                <div class="tab-content">
+                    <div class="tab-panel active" id="successfulTab">
+                        <div class="table-container">
+                            <table class="data-table" id="successfulTable">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Class</th>
+                                        <th>Student ID</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="successfulTableBody">
+                                    <!-- Successful imports will be shown here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-panel" id="failedTab">
+                        <div class="table-container">
+                            <table class="data-table" id="failedTable">
+                                <thead>
+                                    <tr>
+                                        <th>Row</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Error</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="failedTableBody">
+                                    <!-- Failed imports will be shown here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <p>Processing import...</p>
+        </div>
+    </div>
+
+    <script type="module" src="../js/student_import.js"></script>
+</body>
+</html>

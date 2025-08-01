@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management - SIAMS</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="management-container">
+        <div class="stars-background"></div>
+        
+        <header class="management-header glass-panel">
+            <div class="header-content">
+                <button class="back-btn" id="backBtn" aria-label="Go back">
+                    <span class="nav-icon">←</span>
+                    Back
+                </button>
+                <h1>School Management</h1>
+                <div class="header-actions">
+                    <button class="refresh-btn" id="refreshBtn" aria-label="Refresh data">
+                        <span class="nav-icon">🔄</span>
+                        <span class="nav-icon">⟳</span> Refresh
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="management-content">
+            <!-- School Creation Form -->
+            <section class="form-section glass-panel">
+                <div class="section-header">
+                    <h2>Create New School</h2>
+                    <button class="toggle-form-btn" id="toggleFormBtn" aria-label="Toggle form visibility">
+                        <span class="toggle-icon">−</span>
+                        <span class="nav-icon toggle-icon">+</span> Toggle Form
+                    </button>
+                </div>
+                
+                <form class="management-form" id="schoolForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="schoolName">School Name *</label>
+                            <input type="text" id="schoolName" name="name" required 
+                                   placeholder="Enter school name" aria-describedby="schoolName-help">
+                            <div class="input-glow"></div>
+                            <small id="schoolName-help" class="form-help">
+                                Enter the full name of the school
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="schoolAddress">Address</label>
+                            <input type="text" id="schoolAddress" name="address" 
+                                   placeholder="Enter school address">
+                            <div class="input-glow"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="schoolPhone">Phone Number</label>
+                            <input type="tel" id="schoolPhone" name="phone" 
+                                   placeholder="Enter phone number">
+                            <div class="input-glow"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="schoolEmail">Email</label>
+                            <input type="email" id="schoolEmail" name="email" 
+                                   placeholder="Enter school email">
+                            <div class="input-glow"></div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="gradingSystem">Grading System</label>
+                            <select id="gradingSystemType" name="gradingSystemType">
+                                <option value="default">Default Letter Grades (A-F)</option>
+                                <option value="custom">Custom Grading System</option>
+                            </select>
+                            <div class="input-glow"></div>
+                        </div>
+
+                        <div class="form-group full-width hidden" id="customGradingSection">
+                            <label>Custom Grades</label>
+                            <div class="grading-system-builder" id="gradingSystemBuilder">
+                                <div class="grade-item">
+                                    <input type="text" placeholder="Grade (e.g., A)" class="grade-name">
+                                    <input type="number" placeholder="Min %" class="grade-min" min="0" max="100">
+                                    <input type="number" placeholder="Max %" class="grade-max" min="0" max="100">
+                                    <button type="button" class="remove-grade-btn">×</button>
+                                </div>
+                            </div>
+                            <button type="button" class="add-grade-btn" id="addGradeBtn">
+                                <span>+ Add Grade</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="submit-btn" id="submitBtn">
+                            <span>Create School</span>
+                            <div class="btn-glow"></div>
+                        </button>
+                        <button type="button" class="reset-btn" id="resetBtn">
+                            <span>Reset Form</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Schools List -->
+            <section class="data-section glass-panel">
+                <div class="section-header">
+                    <h2>Schools List</h2>
+                    <div class="section-actions">
+                        <div class="search-box">
+                            <input type="text" id="searchSchools" placeholder="Search schools..." 
+                                   aria-label="Search schools">
+                            <span class="search-icon">🔍</span>
+                        </div>
+                        <div class="filter-dropdown">
+                            <select id="filterSchools" aria-label="Filter schools">
+                                <option value="all">All Schools</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="schoolsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Grading System</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schoolsTableBody">
+                            <!-- Schools will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-pagination" id="tablePagination">
+                    <button class="pagination-btn" id="prevPageBtn" disabled>
+                        <span>← Previous</span>
+                    </button>
+                    <span class="pagination-info" id="paginationInfo">
+                        Page 1 of 1
+                    </span>
+                    <button class="pagination-btn" id="nextPageBtn" disabled>
+                        <span>Next →</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <p>Loading schools...</p>
+        </div>
+
+        <!-- Edit School Modal -->
+        <div class="modal-overlay" id="editModalOverlay">
+            <div class="modal glass-panel" id="editModal">
+                <div class="modal-header">
+                    <h3>Edit School</h3>
+                    <button class="modal-close" id="editModalClose">×</button>
+                </div>
+                <div class="modal-content">
+                    <form class="management-form" id="editSchoolForm">
+                        <input type="hidden" id="editSchoolId" name="id">
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="editSchoolName">School Name *</label>
+                                <input type="text" id="editSchoolName" name="name" required>
+                                <div class="input-glow"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editSchoolAddress">Address</label>
+                                <input type="text" id="editSchoolAddress" name="address">
+                                <div class="input-glow"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editSchoolPhone">Phone Number</label>
+                                <input type="tel" id="editSchoolPhone" name="phone">
+                                <div class="input-glow"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editSchoolEmail">Email</label>
+                                <input type="email" id="editSchoolEmail" name="email">
+                                <div class="input-glow"></div>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="editSchoolStatus">Status</label>
+                                <select id="editSchoolStatus" name="status">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                                <div class="input-glow"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="submit-btn">
+                                <span>Update School</span>
+                                <div class="btn-glow"></div>
+                            </button>
+                            <button type="button" class="cancel-btn" id="editCancelBtn">
+                                <span>Cancel</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal-overlay" id="deleteModalOverlay">
+            <div class="modal glass-panel" id="deleteModal">
+                <div class="modal-header">
+                    <h3>Confirm Deletion</h3>
+                    <button class="modal-close" id="deleteModalClose">×</button>
+                </div>
+                <div class="modal-content">
+                    <div class="delete-warning">
+                        <div class="warning-icon">⚠️</div>
+                        <p>Are you sure you want to delete this school?</p>
+                        <p class="warning-text">This action cannot be undone and will also delete all associated classes, courses, and student data.</p>
+                        <div class="school-info" id="deleteSchoolInfo">
+                            <!-- School info will be populated here -->
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="delete-confirm-btn" id="deleteConfirmBtn">
+                            <span>Delete School</span>
+                            <div class="btn-glow"></div>
+                        </button>
+                        <button type="button" class="cancel-btn" id="deleteCancelBtn">
+                            <span>Cancel</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/school.js"></script>
+</body>
+</html>

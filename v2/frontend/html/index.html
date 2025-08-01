@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIAMS - School Information and Management System</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="landing-container">
+        <div class="stars-background"></div>
+        <div class="holographic-globe">
+            <div class="globe-inner"></div>
+            <div class="orbit-ring"></div>
+            <div class="orbit-ring orbit-ring-2"></div>
+        </div>
+        
+        <header class="landing-header">
+            <h1 class="main-title">SIAMS</h1>
+            <p class="tagline">Empowering Education, Seamlessly Connected</p>
+        </header>
+
+        <main class="role-selection">
+            <div class="role-cards">
+                <div class="role-card" data-role="admin" tabindex="0" role="button" aria-label="Admin Portal">
+                    <div class="card-icon">👨‍💼</div>
+                    <h3>Admin Portal</h3>
+                    <p>Manage schools, classes, and system administration</p>
+                </div>
+                <div class="role-card" data-role="teacher" tabindex="0" role="button" aria-label="Teacher Portal">
+                    <div class="card-icon">👩‍🏫</div>
+                    <h3>Teacher Portal</h3>
+                    <p>Upload results and manage course content</p>
+                </div>
+                <div class="role-card" data-role="student" tabindex="0" role="button" aria-label="Student Portal">
+                    <div class="card-icon">👨‍🎓</div>
+                    <h3>Student Portal</h3>
+                    <p>View grades and manage your profile</p>
+                </div>
+            </div>
+            
+        <button class="login-btn pulse-animation" id="loginBtn" href="login.html">
+                <span>Access Portal</span>
+                <div class="btn-glow"></div>
+            </button>
+        </main>
+
+        <div class="particles-container" id="particlesContainer"></div>
+    </div>
+
+    <script type="module" src="../js/main.js"></script>
+</body>
+</html>

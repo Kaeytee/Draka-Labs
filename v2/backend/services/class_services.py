@@ -147,7 +147,7 @@ def create_class(name, school_id, academic_year, description=None):
         session.add(new_class)
         session.commit()
         session.refresh(new_class)
-        logger.info(f"Created class激烈的class_id {new_class.id} for school_id {school_id}")
+        logger.info(f"Created class with id {new_class.id} for school_id {school_id}")
         result = {
             "id": new_class.id,
             "name": new_class.name,

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Registration - SIAMS</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="stars-background"></div>
+        <div class="particles-container" id="particlesContainer"></div>
+        
+        <div class="auth-panel glass-panel">
+            <div class="auth-header">
+                <h1>Admin Registration</h1>
+                <p>Create your administrator account</p>
+            </div>
+
+            <form class="auth-form" id="registerForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" required aria-label="Enter your full name">
+                    <div class="input-glow"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required aria-label="Enter your email">
+                    <div class="input-glow"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required aria-label="Enter your password">
+                    <div class="input-glow"></div>
+                    <div class="password-strength" id="passwordStrength"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required aria-label="Confirm your password">
+                    <div class="input-glow"></div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="registerSubmit">
+                    <span>Register</span>
+                    <div class="btn-glow"></div>
+                </button>
+
+                <div class="auth-links">
+                    <a href="login.html" class="back-link">← Back to Login</a>
+                </div>
+            </form>
+
+            <div class="success-overlay" id="successOverlay">
+                <div class="success-content">
+                    <div class="success-icon">✅</div>
+                    <p>Registration successful! Redirecting to login...</p>
+                </div>
+            </div>
+
+            <div class="error-overlay" id="errorOverlay">
+                <div class="error-content">
+                    <div class="error-icon">⚠️</div>
+                    <p id="errorMessage"></p>
+                    <button class="error-close" id="errorClose">×</button>
+                </div>
+            </div>
+
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-spinner">
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                </div>
+                <p>Creating account...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/auth.js"></script>
+</body>
+</html>

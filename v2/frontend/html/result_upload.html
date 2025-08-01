@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result Upload - SIAMS</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="upload-container">
+        <div class="stars-background"></div>
+        
+        <header class="upload-header glass-panel">
+            <div class="header-content">
+                <button class="back-btn" id="backBtn" aria-label="Go back">
+                    <span class="nav-icon">←</span>
+                    Back
+                    <span class="nav-icon">←</span> Back
+                </button>
+                <h1>Upload Results</h1>
+                <div class="header-actions">
+                    <button class="download-template-btn" id="downloadTemplateBtn" aria-label="Download CSV template">
+                        <span class="nav-icon">📥</span>
+                        Download Template
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="upload-content">
+            <!-- Course Selection -->
+            <section class="course-section glass-panel">
+                <div class="section-header">
+                    <h2>Select Course</h2>
+                </div>
+                
+                <div class="course-selection">
+                    <div class="form-group">
+                        <label for="courseSelect">Course *</label>
+                        <select id="courseSelect" name="courseId" required>
+                            <option value="">Select a course to upload results</option>
+                        </select>
+                        <div class="input-glow"></div>
+                    </div>
+
+                    <div class="course-info" id="courseInfo">
+                        <!-- Course details will be populated here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upload Method Selection -->
+            <section class="method-section glass-panel" id="methodSection">
+                <div class="section-header">
+                    <h2>Upload Method</h2>
+                </div>
+                
+                <div class="method-selection">
+                    <div class="method-card" data-method="manual">
+                        <div class="method-icon">✏️</div>
+                        <h3>Manual Entry</h3>
+                        <p>Enter results individually for each student</p>
+                        <button class="method-btn" data-method="manual">
+                            <span>Choose Manual</span>
+                        </button>
+                    </div>
+                    
+                    <div class="method-card" data-method="csv">
+                        <div class="method-icon">📊</div>
+                        <h3>CSV Upload</h3>
+                        <p>Upload results in bulk using CSV file</p>
+                        <button class="method-btn" data-method="csv">
+                            <span>Choose CSV</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Manual Entry Section -->
+            <section class="manual-section glass-panel hidden" id="manualSection">
+                <div class="section-header">
+                    <h2>Manual Result Entry</h2>
+                    <div class="section-actions">
+                        <div class="search-box">
+                            <input type="text" id="searchStudents" placeholder="Search students..." 
+                                   aria-label="Search students">
+                            <span class="search-icon">🔍</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <form class="manual-form" id="manualForm">
+                    <div class="students-grid" id="studentsGrid">
+                        <!-- Student result entries will be populated here -->
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="submit-btn" id="manualSubmitBtn">
+                            <span>Save Results</span>
+                            <div class="btn-glow"></div>
+                        </button>
+                        <button type="button" class="cancel-btn" id="manualCancelBtn">
+                            <span>Cancel</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- CSV Upload Section -->
+            <section class="csv-section glass-panel hidden" id="csvSection">
+                <div class="section-header">
+                    <h2>CSV Result Upload</h2>
+                </div>
+                
+                <div class="upload-instructions">
+                    <div class="instruction-item">
+                        <div class="instruction-icon">📋</div>
+                        <div class="instruction-content">
+                            <h4>CSV Format</h4>
+                            <p>Use columns: Student ID, Student Email, Score, Grade (optional)</p>
+                        </div>
+                    </div>
+                    <div class="instruction-item">
+                        <div class="instruction-icon">📊</div>
+                        <div class="instruction-content">
+                            <h4>Score Format</h4>
+                            <p>Enter numeric scores (0-100). Grades will be calculated automatically.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="upload-area" id="csvUploadArea">
+                    <div class="file-input-container" id="csvFileInputContainer">
+                        <!-- CSV file input will be created here -->
+                    </div>
+                </div>
+
+                <div class="csv-preview hidden" id="csvPreview">
+                    <div class="preview-header">
+                        <h3>Preview Results</h3>
+                        <div class="preview-stats" id="csvPreviewStats">
+                            <!-- Stats will be populated here -->
+                        </div>
+                    </div>
+
+                    <div class="validation-summary" id="csvValidationSummary">
+                        <!-- Validation results will be shown here -->
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table" id="csvPreviewTable">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Email</th>
+                                    <th>Score</th>
+                                    <th>Grade</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="csvPreviewTableBody">
+                                <!-- Preview data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="csv-actions">
+                        <button class="submit-btn" id="csvSubmitBtn" disabled>
+                            <span>Upload Results</span>
+                            <div class="btn-glow"></div>
+                        </button>
+                        <button class="cancel-btn" id="csvCancelBtn">
+                            <span>Cancel</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upload Progress Section -->
+            <section class="progress-section glass-panel hidden" id="progressSection">
+                <div class="section-header">
+                    <h2>Upload Progress</h2>
+                </div>
+                
+                <div class="progress-content">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">0%</div>
+                    </div>
+                    
+                    <div class="progress-details" id="progressDetails">
+                        <div class="progress-item">
+                            <span class="progress-label">Total Results:</span>
+                            <span class="progress-value" id="totalResults">0</span>
+                        </div>
+                        <div class="progress-item">
+                            <span class="progress-label">Uploaded:</span>
+                            <span class="progress-value" id="uploadedResults">0</span>
+                        </div>
+                        <div class="progress-item">
+                            <span class="progress-label">Successful:</span>
+                            <span class="progress-value success" id="successfulResults">0</span>
+                        </div>
+                        <div class="progress-item">
+                            <span class="progress-label">Failed:</span>
+                            <span class="progress-value error" id="failedResults">0</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-log" id="progressLog">
+                        <!-- Upload log will be shown here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upload Results Section -->
+            <section class="results-section glass-panel hidden" id="resultsSection">
+                <div class="section-header">
+                    <h2>Upload Results</h2>
+                </div>
+                
+                <div class="results-summary" id="resultsSummary">
+                    <!-- Results summary will be populated here -->
+                </div>
+
+                <div class="results-actions">
+                    <button class="download-results-btn" id="downloadResultsBtn">
+                        <span>📥 Download Report</span>
+                        <div class="btn-glow"></div>
+                    </button>
+                    <button class="new-upload-btn" id="newUploadBtn">
+                        <span>🔄 New Upload</span>
+                    </button>
+                </div>
+
+                <div class="results-tabs">
+                    <button class="tab-btn active" data-tab="successful">
+                        Successful (<span id="successfulCount">0</span>)
+                    </button>
+                    <button class="tab-btn" data-tab="failed">
+                        Failed (<span id="failedCount">0</span>)
+                    </button>
+                </div>
+
+                <div class="tab-content">
+                    <div class="tab-panel active" id="successfulTab">
+                        <div class="table-container">
+                            <table class="data-table" id="successfulTable">
+                                <thead>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Student ID</th>
+                                        <th>Score</th>
+                                        <th>Grade</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="successfulTableBody">
+                                    <!-- Successful uploads will be shown here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-panel" id="failedTab">
+                        <div class="table-container">
+                            <table class="data-table" id="failedTable">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Student Name</th>
+                                        <th>Score</th>
+                                        <th>Error</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="failedTableBody">
+                                    <!-- Failed uploads will be shown here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <p>Processing upload...</p>
+        </div>
+    </div>
+
+    <script type="module" src="../js/result_upload.js"></script>
+</body>
+</html>

@@ -52,34 +52,55 @@ def main():
                 {"grade": "F", "min": 0, "max": 59}
             ]
             admin_dob = datetime.date(1980 + s, 1, 1)
-            
-            # Register school and admin
-            admin_result = register_school_admin(
-                school_name=school_name,
+
+            # 1. Create admin user first (without school)
+            from services.accounts import generate_initials, generate_username, generate_unique_username_email, generate_password
+            initials = generate_initials(school_name)
+            base_username = generate_username(admin_name)
+            username, email = generate_unique_username_email(session, base_username, initials, "admin")
+            password = generate_password(initials, f"{s}0001")
+            from models.user import User, UserRole
+            import hashlib
+            hashed_password = hashlib.sha256(password.encode()).hexdigest()
+            admin_user = User(
+                username=username,
                 full_name=admin_name,
+                hashed_password=hashed_password,
+                email=admin_email,
+                role=UserRole.admin,
+                gender=Gender.male if s % 2 == 1 else Gender.female,
+                date_of_birth=admin_dob,
+                phone=admin_phone
+            )
+            session.add(admin_user)
+            session.commit()
+            session.refresh(admin_user)
+
+            # 2. Create school with admin_id
+            from models.school import School
+            school = School(
+                name=school_name,
+                initials=initials,
+                grading_system=json.dumps(grading_system),
                 phone=admin_phone,
                 email=admin_email,
-                gender=admin_gender,
-                grading_system=grading_system,
-                date_of_birth=admin_dob
+                admin_id=admin_user.id
             )
-            if admin_result["status"] != "success":
-                print(f"Failed to create school {school_name}: {admin_result['message']}")
-                continue
+            session.add(school)
+            session.commit()
+            session.refresh(school)
 
-            # Fetch the created school
-            school = session.query(School).filter_by(name=school_name).first()
-            if not school:
-                print(f"School {school_name} not found after creation.")
-                continue
+            # 3. Update admin user with school_id
+            admin_user.school_id = school.id
+            session.commit()
 
             school_data = {
                 "name": school_name,
                 "initials": school.initials,
                 "admin": {
-                    "username": admin_result["admin_username"],
-                    "email": admin_result["admin_email"],
-                    "password": admin_result["password"]
+                    "username": admin_user.username,
+                    "email": admin_user.email,
+                    "password": password
                 },
                 "classes": []
             }
@@ -106,6 +127,7 @@ def main():
                             session,
                             teacher_name,
                             school.initials,
+                            school_id=school.id,
                             gender=teacher_gender,
                             date_of_birth=teacher_dob
                         )
@@ -173,7 +195,7 @@ def main():
                             gender=student_gender,
                             date_of_birth=student_dob
                         )
-                        if not ok:
+                        if not ok or student_info is None:
                             print(f"Failed to enroll student {student_name}: {msg}")
                             continue
                         class_data["students"].append({

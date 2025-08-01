@@ -121,7 +121,10 @@ def get_courses(class_id=None, school_id=None):
     finally:
         db.close()
 
-def create_course(title, code, credit_hours, grading_type, class_id, school_initials, teacher_id=None, teacher_full_name=None, teacher_gender="male", teacher_dob=None):
+def create_course(title, code, credit_hours, grading_type, class_id, school_initials, teacher_id=None, teacher_full_name=None, teacher_gender="male", teacher_dob=None, school_id=None):
+
+
+
     """
     Create a new course and assign a teacher (existing or auto-generated).
 
@@ -273,5 +276,51 @@ def create_course(title, code, credit_hours, grading_type, class_id, school_init
         db.rollback()
         log_audit(None, "create_course_error", f"Database error creating course: {str(e)}")
         return False, f"Database error: {str(e)}", None
+    finally:
+        db.close()
+
+def get_courses_for_teacher(user_id):
+    """
+    Retrieve all courses assigned to a specific teacher.
+
+    Args:
+        user_id (int): The teacher's user ID.
+
+    Returns:
+        list: List of dictionaries containing course details assigned to the teacher.
+    """
+    if not isinstance(user_id, int):
+        logger.error(f"Invalid user_id: {user_id}")
+        return []
+
+    db = SessionLocal()
+    try:
+        courses = db.query(Course).filter_by(teacher_id=user_id).all()
+        result = []
+        for course in courses:
+            course_data = {
+                "id": course.id,
+                "title": course.title,
+                "code": course.code,
+                "credit_hours": course.credit_hours,
+                "grading_type": course.grading_type,
+                "class_id": course.class_id,
+                "teacher_id": course.teacher_id
+            }
+            # Include students via class relationship
+            if course.class_:
+                course_data["students"] = [
+                    {
+                        "id": student.id,
+                        "full_name": student.full_name,
+                        "profile_image": getattr(student, "profile_image", None)
+                    } for student in course.class_.students
+                ]
+            result.append(course_data)
+        logger.info(f"Retrieved {len(result)} courses for teacher_id={user_id}")
+        return result
+    except DatabaseError as e:
+        logger.error(f"Database error retrieving courses for teacher_id={user_id}: {str(e)}")
+        return []
     finally:
         db.close()

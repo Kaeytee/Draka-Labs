@@ -24,22 +24,30 @@ def validate_gender(gender, prompt="Gender"):
 def main():
     print("\n=== Superuser Creation Script ===\n")
     session = SessionLocal()
-    full_name = validate_non_empty(input("Full Name: "), "Full Name")
-    if not full_name:
-        sys.exit(1)
-    phone = validate_non_empty(input("Phone: "), "Phone")
-    if not phone:
-        sys.exit(1)
-    email = validate_non_empty(input("Email: "), "Email")
-    if not email:
-        sys.exit(1)
-    gender = validate_gender(input(f"Gender ({', '.join([g.value for g in Gender])}): "), "Gender")
-    if not gender:
-        sys.exit(1)
-    password = getpass.getpass("Password: ")
-    if not password:
+
+    # Keep prompting until valid input is given for each field
+    while True:
+        full_name = validate_non_empty(input("Full Name: "), "Full Name")
+        if full_name:
+            break
+    while True:
+        phone = validate_non_empty(input("Phone: "), "Phone")
+        if phone:
+            break
+    while True:
+        email = validate_non_empty(input("Email: "), "Email")
+        if email:
+            break
+    while True:
+        gender = validate_gender(input(f"Gender ({', '.join([g.value for g in Gender])}): "), "Gender")
+        if gender:
+            break
+    while True:
+        password = getpass.getpass("Password: ")
+        if password:
+            break
         print("[Error] Password cannot be empty")
-        sys.exit(1)
+
     result = register_superuser(full_name, phone, email, gender, password)
     if result["status"] == "success":
         print(f"[Success] Superuser created: {result['username']} / {result['email']}")
