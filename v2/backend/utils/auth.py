@@ -1,5 +1,10 @@
 
 import json
+import logging
+
+# Configure logging with debug level
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 def require_role(allowed_roles):
     """
@@ -15,10 +20,31 @@ def require_role(allowed_roles):
     def decorator(handler):
         def wrapper(request, *args, **kwargs):
             user = getattr(request, 'user', None)
-            if not user or not hasattr(user, 'role') or user.role.value not in allowed_roles:
+            logger.info(f"Auth check - User: {user}, Required roles: {allowed_roles}")
+            
+            if not user:
+                logger.warning("Authentication required - no user found")
+                request._set_headers(403)
+                request.wfile.write(json.dumps({"error": "Forbidden: authentication required"}).encode())
+                return
+            
+            # Handle both dictionary format (from JWT) and object format (from DB)
+            if isinstance(user, dict):
+                user_role = user.get('role')
+            elif hasattr(user, 'role'):
+                # Handle enum role
+                user_role = user.role.value if hasattr(user.role, 'value') else user.role
+            else:
+                user_role = None
+            
+            logger.info(f"User role: {user_role}, Allowed roles: {allowed_roles}")
+            
+            if not user_role or user_role not in allowed_roles:
+                logger.warning(f"Insufficient permissions - user role: {user_role}, required: {allowed_roles}")
                 request._set_headers(403)
                 request.wfile.write(json.dumps({"error": "Forbidden: insufficient permissions"}).encode())
                 return
+                
             return handler(request, *args, **kwargs)
         return wrapper
     return decorator

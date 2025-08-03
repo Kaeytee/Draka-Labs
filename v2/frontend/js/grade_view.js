@@ -317,3 +317,16 @@ class GradeView {
 }
 
 export const gradeView = new GradeView()
+
+document.addEventListener("DOMContentLoaded", () => {
+  const backBtn = document.getElementById("backBtn")
+  backBtn?.addEventListener("click", () => {
+    window.history.back()
+  })
+
+  // Example: Load grade details (replace with real logic)
+  const gradeDetails = document.getElementById("gradeDetails")
+  if (gradeDetails && gradeDetails.textContent.trim() === "") {
+    gradeDetails.textContent = "Grade details will appear here."
+  }
+})

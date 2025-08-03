@@ -4,9 +4,13 @@ import csv
 import io
 import os
 from urllib.parse import urlparse, parse_qs
-from services.grade_services import get_grades, upload_grade
+from services.grade_services import get_grades, upload_grade, get_grades_for_student
 from services.student_services import student_lookup
 from utils.auth import require_role
+import json
+import logging
+import os
+import csv
 
 # Configure logging for debugging and auditing
 logging.basicConfig(
@@ -19,13 +23,13 @@ logger = logging.getLogger(__name__)
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB max file size
 ALLOWED_FILE_EXTENSIONS = {'.csv', '.txt'}
 
-@require_role(['admin', 'teacher'])
+@require_role(['admin', 'teacher', 'student'])
 def handle_list_grades(request):
     """
     Handle GET requests to retrieve all grades for a student.
 
     This endpoint fetches grades for a specified student using the student_id
-    provided in query parameters. Accessible to admin and teacher roles.
+    provided in query parameters. Accessible to admin, teacher, and student roles.
 
     Args:
         request: HTTP request object with query parameters and user authentication
@@ -70,8 +74,19 @@ def handle_list_grades(request):
             request.wfile.write(json.dumps({"error": "student_id must be an integer"}).encode('utf-8'))
             return
 
+        # Students can only access their own grades
+        if hasattr(request, 'user') and request.user:
+            user_role = request.user.get('role') if isinstance(request.user, dict) else getattr(request.user, 'role', None)
+            user_id = request.user.get('id') if isinstance(request.user, dict) else getattr(request.user, 'id', None)
+            
+            if user_role == 'student' and user_id != student_id:
+                logger.warning(f"Student {user_id} attempted to access grades for student {student_id}")
+                request._set_headers(403)
+                request.wfile.write(json.dumps({"error": "Students can only access their own grades"}).encode('utf-8'))
+                return
+
         # Fetch grades
-        grades = get_grades(student_id)
+        grades = get_grades_for_student(student_id)
         logger.info(f"User {request.user.id} retrieved {len(grades)} grades for student_id {student_id}")
         request._set_headers(200)
         request.wfile.write(json.dumps({"grades": grades}).encode('utf-8'))

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Date
+from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Date, UniqueConstraint
 from sqlalchemy.orm import relationship
 from models.grade import Grade
 from database.db import Base
@@ -24,7 +24,7 @@ class User(Base):
     __tablename__ = "users"  # Changed to plural for consistency with SQL conventions
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(50), unique=True, index=True, nullable=False)
+    username = Column(String(50), index=True, nullable=False)
     full_name = Column(String(100), nullable=False)
     hashed_password = Column(String(256), nullable=False)
     email = Column(String(100), unique=True, index=True, nullable=False)
@@ -38,6 +38,11 @@ class User(Base):
     graduation_year = Column(Integer, nullable=True)  # Changed to Integer for year
     profile_image = Column(String(256), nullable=True)
     school_id = Column(Integer, ForeignKey("schools.id"), nullable=True, index=True)
+
+    __table_args__ = (
+        # Enforce username uniqueness per school
+        UniqueConstraint('username', 'school_id', name='uq_username_school'),
+    )
     class_id = Column(Integer, ForeignKey("classes.id"), nullable=True, index=True)
 
     # Relationships

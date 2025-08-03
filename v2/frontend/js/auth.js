@@ -96,22 +96,24 @@ class Auth {
   }
 
   async handleLogin(form) {
+
     const formData = new FormData(form)
     const loginData = {
-      role: formData.get("role"),
       email: formData.get("email"),
       password: formData.get("password"),
     }
 
     // Validate form
-    if (!this.validateLoginForm(loginData)) {
+    if (!loginData.email || !loginData.password) {
+      validation.validateEmail(form.querySelector('[name="email"]'))
+      validation.validatePassword(form.querySelector('[name="password"]'))
       return
     }
 
     this.showLoading(true)
 
     try {
-      console.log("Attempting login:", { role: loginData.role, email: loginData.email })
+      console.log("Attempting login:", { email: loginData.email })
 
       const response = await api.post("/auth/login", loginData)
 
@@ -191,11 +193,7 @@ class Auth {
   }
 
   validateLoginForm(data) {
-    if (!data.role) {
-      this.showError("Please select your role")
-      return false
-    }
-
+    
     if (!validation.isValidEmail(data.email)) {
       this.showError("Please enter a valid email address")
       return false

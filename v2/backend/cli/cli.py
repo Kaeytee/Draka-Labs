@@ -187,13 +187,43 @@ def main():
                 print(f"[Error] {result['message']}")
         elif choice == "3":
             print("\n--- Login ---")
-            username = validate_non_empty(input("Username: "), "Username")
-            if not username:
+            print("Select role to login as:")
+            print("1. Student")
+            print("2. Staff/Teacher")
+            print("3. Admin")
+            role_choice = input("Role (1-3): ").strip()
+            if role_choice not in {"1", "2", "3"}:
+                print("[Error] Invalid role selection")
+                continue
+            # List schools for selection
+            schools = list_schools()
+            if not schools:
+                print("[Error] No schools found. Please register a school first.")
+                continue
+            print("Available Schools:")
+            for s in schools:
+                print(f"{s['id']}: {s['name']}")
+            school_id = validate_int(input("Enter School ID: "), "School ID", min_val=1)
+            if not school_id:
                 continue
             password = validate_non_empty(input("Password: "), "Password")
             if not password:
                 continue
-            user = session.query(User).filter_by(username=username).first()
+            if role_choice == "1":
+                # Student login by email
+                email = validate_non_empty(input("Student Email: "), "Student Email")
+                if not email:
+                    continue
+                user = session.query(User).filter_by(email=email, school_id=school_id, role=UserRole.student).first()
+            else:
+                # Staff/Admin login by username
+                username = validate_non_empty(input("Username: "), "Username")
+                if not username:
+                    continue
+                if role_choice == "2":
+                    user = session.query(User).filter_by(username=username, school_id=school_id, role=UserRole.staff).first()
+                else:
+                    user = session.query(User).filter_by(username=username, school_id=school_id, role=UserRole.admin).first()
             if not user:
                 print("[Error] User not found")
                 continue
@@ -202,7 +232,7 @@ def main():
             if str(user.hashed_password) != hashed:
                 print("[Error] Incorrect password")
                 continue
-            print(f"[Success] Logged in as {user.username} ({user.role.value})")
+            print(f"[Success] Logged in as {user.username if role_choice != '1' else user.email} ({user.role.value})")
             user_id = user.id
 
             while True:

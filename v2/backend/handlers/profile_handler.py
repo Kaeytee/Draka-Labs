@@ -4,7 +4,7 @@ import os
 import uuid
 import bcrypt
 from database.db import SessionLocal
-from models.user import User
+from models.user import User, UserRole
 from services.student_services import set_student_profile_picture
 from utils.auth import require_role
 
@@ -649,3 +649,66 @@ def handle_upload_profile_picture(request):
         logger.error(f"User {user.id} failed to update profile picture URL: {str(e)}")
         request._set_headers(500)
         request.wfile.write(json.dumps({"error": f"Internal server error: {str(e)}"}).encode('utf-8'))
+
+@require_role(['admin', 'teacher', 'student'])
+def handle_student_profile_by_id(request):
+    """
+    Handle GET requests to retrieve a student's profile by ID.
+    
+    Students can only access their own profile.
+    Teachers and admins can access any student profile.
+    """
+    from urllib.parse import urlparse
+    import re
+    
+    # Extract student_id from path like /students/4/profile
+    path_match = re.match(r'/students/(\d+)/profile', urlparse(request.path).path)
+    if not path_match:
+        request._set_headers(400)
+        request.wfile.write(json.dumps({"error": "Invalid student ID in path"}).encode('utf-8'))
+        return
+    
+    student_id = int(path_match.group(1))
+    
+    # Check permissions - students can only access their own profile
+    if hasattr(request, 'user') and request.user:
+        user_role = request.user.get('role')
+        user_id = request.user.get('id')
+        
+        if user_role == 'student' and user_id != student_id:
+            request._set_headers(403)
+            request.wfile.write(json.dumps({"error": "Students can only access their own profile"}).encode('utf-8'))
+            return
+    
+    db = SessionLocal()
+    try:
+        student = db.query(User).filter_by(id=student_id, role=UserRole.student).first()
+        if not student:
+            request._set_headers(404)
+            request.wfile.write(json.dumps({"error": "Student not found"}).encode('utf-8'))
+            return
+        
+        profile_data = {
+            "id": student.id,
+            "username": student.username,
+            "full_name": student.full_name,
+            "email": student.email,
+            "role": student.role.value,
+            "profile_image": student.profile_image,
+            "date_of_birth": student.date_of_birth.isoformat() if student.date_of_birth else None,
+            "address": student.address,
+        }
+        
+        # Only add created_at if it exists
+        if hasattr(student, 'created_at') and student.created_at:
+            profile_data["created_at"] = student.created_at.isoformat()
+        
+        request._set_headers(200)
+        request.wfile.write(json.dumps(profile_data).encode('utf-8'))
+        
+    except Exception as e:
+        logger.error(f"Failed to get student profile {student_id}: {str(e)}")
+        request._set_headers(500)
+        request.wfile.write(json.dumps({"error": f"Internal server error: {str(e)}"}).encode('utf-8'))
+    finally:
+        db.close()

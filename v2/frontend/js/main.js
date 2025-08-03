@@ -62,27 +62,40 @@ class Main {
   }
 
   initializeLandingPage() {
-    // Set up role card interactions
     const roleCards = document.querySelectorAll(".role-card")
     const loginBtn = document.getElementById("loginBtn")
-    this.selectedRole = null
+    if (!roleCards.length || !loginBtn) {
+      console.error("Required elements missing for landing page")
+      error.show("Page Error", "Required elements not found")
+      return
+    }
+    this.selectedRole = sessionStorage.getItem("selectedRole") || null
 
+
+    // Clicking a role card immediately navigates to login for that role
     roleCards.forEach((card) => {
-      card.addEventListener("click", () => this.selectRole(card, roleCards))
+      card.addEventListener("click", () => {
+        const role = card.dataset.role
+        if (role) {
+          sessionStorage.setItem("selectedRole", role)
+          navigation.navigateToLogin(role)
+        }
+      })
       card.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault()
-          this.selectRole(card, roleCards)
+          const role = card.dataset.role
+          if (role) {
+            sessionStorage.setItem("selectedRole", role)
+            navigation.navigateToLogin(role)
+          }
         }
       })
     })
 
+    // Access Portal button always goes to generic login page
     loginBtn.addEventListener("click", () => {
-      if (this.selectedRole) {
-        navigation.navigateToLogin(this.selectedRole)
-      } else {
-        navigation.navigateToLogin()
-      }
+      navigation.navigateToLogin()
     })
 
     // Animate elements on load
@@ -94,24 +107,29 @@ class Main {
     selectedCard.classList.add("selected")
 
     const role = selectedCard.dataset.role
+    if (!role) {
+      console.error("Role card missing data-role attribute")
+      error.show("Selection Error", "Invalid role selected")
+      return
+    }
     this.selectedRole = role
     sessionStorage.setItem("selectedRole", role)
 
     // Update login button text
     const loginBtn = document.getElementById("loginBtn")
     const btnText = loginBtn.querySelector("span")
-    btnText.textContent = `Access ${role.charAt(0).toUpperCase() + role.slice(1)} Portal`
+    if (btnText) {
+      btnText.textContent = `Access ${role.charAt(0).toUpperCase() + role.slice(1)} Portal`
+    }
 
     console.log(`Role selected: ${role}`)
   }
 
   animatePageLoad() {
-    // Animate title
     const title = document.querySelector(".main-title")
     if (title) {
       title.style.opacity = "0"
       title.style.transform = "translateY(30px)"
-
       setTimeout(() => {
         title.style.transition = "all 1s ease-out"
         title.style.opacity = "1"
@@ -119,28 +137,21 @@ class Main {
       }, 100)
     }
 
-    // Animate role cards
     const roleCards = document.querySelectorAll(".role-card")
     roleCards.forEach((card, index) => {
       card.style.opacity = "0"
       card.style.transform = "translateY(50px)"
-
-      setTimeout(
-        () => {
-          card.style.transition = "all 0.6s ease-out"
-          card.style.opacity = "1"
-          card.style.transform = "translateY(0)"
-        },
-        300 + index * 200,
-      )
+      setTimeout(() => {
+        card.style.transition = "all 0.6s ease-out"
+        card.style.opacity = "1"
+        card.style.transform = "translateY(0)"
+      }, 300 + index * 200)
     })
 
-    // Animate login button
     const loginBtn = document.getElementById("loginBtn")
     if (loginBtn) {
       loginBtn.style.opacity = "0"
       loginBtn.style.transform = "translateY(30px)"
-
       setTimeout(() => {
         loginBtn.style.transition = "all 0.8s ease-out"
         loginBtn.style.opacity = "1"
@@ -150,21 +161,17 @@ class Main {
   }
 
   setupGlobalEventListeners() {
-    // Handle browser back/forward navigation
     window.addEventListener("popstate", (e) => {
       console.log("Navigation state changed:", e.state)
       this.initializePage()
     })
 
-    // Handle global keyboard shortcuts
     document.addEventListener("keydown", (e) => {
-      // Escape key to close modals
       if (e.key === "Escape") {
         const activeModal = document.querySelector(".modal-overlay.active")
         if (activeModal) {
           activeModal.classList.remove("active")
         }
-
         const activeError = document.querySelector(".error-overlay.active")
         if (activeError) {
           activeError.classList.remove("active")
@@ -172,7 +179,6 @@ class Main {
       }
     })
 
-    // Handle online/offline status
     window.addEventListener("online", () => {
       console.log("Connection restored")
       utils.showNotification("Connection restored", "success")
@@ -183,13 +189,11 @@ class Main {
       utils.showNotification("Connection lost. Some features may not work.", "warning")
     })
 
-    // Handle visibility change (tab switching)
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         console.log("Page hidden")
       } else {
         console.log("Page visible")
-        // Refresh data if needed
         this.refreshPageData()
       }
     })
@@ -199,39 +203,30 @@ class Main {
     const particlesContainer = document.getElementById("particlesContainer")
     if (!particlesContainer) return
 
-    // Create floating particles
     for (let i = 0; i < 20; i++) {
       setTimeout(() => {
         this.createParticle(particlesContainer)
       }, i * 200)
     }
 
-    // Continue creating particles
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       if (document.querySelectorAll(".particle").length < 30) {
         this.createParticle(particlesContainer)
       }
     }, 1000)
+
+    window.addEventListener("unload", () => clearInterval(intervalId))
   }
 
   createParticle(container) {
     const particle = document.createElement("div")
     particle.className = "particle"
-
-    // Random position
     particle.style.left = Math.random() * 100 + "%"
     particle.style.top = Math.random() * 100 + "%"
-
-    // Random color
     const colors = ["var(--primary-color)", "var(--secondary-color)", "var(--accent-color)"]
     particle.style.background = colors[Math.floor(Math.random() * colors.length)]
-
-    // Random animation delay
     particle.style.animationDelay = Math.random() * 6 + "s"
-
     container.appendChild(particle)
-
-    // Remove particle after animation
     setTimeout(() => {
       if (particle.parentNode) {
         particle.parentNode.removeChild(particle)
@@ -240,7 +235,6 @@ class Main {
   }
 
   refreshPageData() {
-    // Override in specific page implementations
     console.log("Refreshing page data...")
   }
 
@@ -254,20 +248,14 @@ class Main {
       viewportSize: `${window.innerWidth}x${window.innerHeight}`,
       connectionType: navigator.connection?.effectiveType || "unknown",
     }
-
     console.log("Page load logged:", logData)
-
-    // In production, send to analytics service
-    // analytics.track('page_view', logData);
   }
 }
 
-// Initialize when DOM is loaded
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => new Main())
 } else {
   new Main()
 }
 
-// Export for use in other modules
 export const main = new Main()

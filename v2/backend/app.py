@@ -17,10 +17,15 @@ class RestartHandler(FileSystemEventHandler):
 		if self.process:
 			self.process.terminate()
 			self.process.wait()
-		self.process = subprocess.Popen([sys.executable, "main.py"])
+		# Forward stdout and stderr so logs are visible
+		self.process = subprocess.Popen(
+			[sys.executable, "main.py"],
+			stdout=sys.stdout,
+			stderr=sys.stderr
+		)
 
 	def on_any_event(self, event):
-		if event.src_path.endswith(".py"):
+		if isinstance(event.src_path, str) and event.src_path.endswith(".py"):
 			print(f"Detected change in {event.src_path}, restarting server...")
 			self.start_server()
 
